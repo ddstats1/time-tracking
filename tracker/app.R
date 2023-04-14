@@ -34,8 +34,10 @@ weekly_totals <- 999
 
 ## Read in goals table ----------------------------
 
-daily_goals_df_raw <- read_sheet("1JEtORWEfRUv_6sBLzQzXKrR5Bvc3hs3njQSm6y6Khtk", 
-                                 sheet = "Daily Goals")
+daily_goals_df_raw <- read_csv("https://raw.githubusercontent.com/ddstats1/time-tracking/master/tracker/time_goals_2023-04-14.csv")
+
+#daily_goals_df_raw <- read_sheet("1JEtORWEfRUv_6sBLzQzXKrR5Bvc3hs3njQSm6y6Khtk", 
+#                                 sheet = "Daily Goals")
 
 daily_goals_df <- daily_goals_df_raw %>% 
   pivot_longer(cols = BlueLabs:`time-with-family`, 
