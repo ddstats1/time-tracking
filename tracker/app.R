@@ -21,7 +21,7 @@ library(janitor)
 #entries_df <- read_sheet("1HAx_fVyI134wue7rroh_FaLh9DxlIQK8VQiNyD8m5cQ", sheet = "Sheet1") %>% 
 #  mutate(date = lubridate::date(start))
 
-entries_df <- read_csv("https://raw.githubusercontent.com/ddstats1/time-goals/main/time_entries_2023-04-14.csv") %>% 
+entries_df <- read_csv("https://raw.githubusercontent.com/ddstats1/time-tracking/master/tracker/time_entries_2023-04-14.csv") %>% 
   mutate(date = lubridate::date(start))
 
 # get df's with daily/weekly/monthly/yearly totals by project
