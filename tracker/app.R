@@ -18,16 +18,25 @@ library(janitor)
 
 # time entries being written out every minute onto the server
 
-# MAKE SURE TO CHANGE FILE PATH WHEN PUSHING -- 
-
-latest_entries_file <- list.files(here::here("toggl-entries")) %>% 
+latest_entries_file <- list.files("/home/daniel/toggl-entries") %>% 
   as_tibble() %>% 
   arrange(desc(value)) %>% 
   slice(1) %>% 
   pull()
 
-entries_df <- read_csv(here::here("toggl-entries", latest_entries_file)) %>% 
+entries_df <- read_csv(str_c("/home/daniel/toggl-entries/", latest_entries_file)) %>% 
   mutate(date = lubridate::date(start))
+
+# FOR LOCAL TESTING ONLY, DON'T PUSH THESE FILE PATHS
+
+#latest_entries_file <- list.files(here::here("toggl-entries")) %>% 
+#  as_tibble() %>% 
+#  arrange(desc(value)) %>% 
+#  slice(1) %>% 
+#  pull()
+
+#entries_df <- read_csv(here::here("toggl-entries", latest_entries_file)) %>% 
+#  mutate(date = lubridate::date(start))
 
 
 #gs4_auth("dgdulaney1@gmail.com")
