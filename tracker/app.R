@@ -295,10 +295,18 @@ ui <- dashboardPage(
     )
   ),
   dashboardBody(
+    
     # remove horizontal scrollbars under boxes
     tags$head(
       tags$style(HTML('.shiny-split-layout>div {overflow: hidden;}')),
     ),
+    
+    # so looks like desktop version on mobile
+    tags$head( 
+      tags$meta(name = "viewport", content = "width=1600"), 
+      uiOutput("body")
+    ),
+    
     tabItems(
       
       ## Donut tab ----------------------------------
