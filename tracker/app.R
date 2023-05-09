@@ -18,15 +18,6 @@ library(janitor)
 
 # time entries being written out every minute onto the server
 
-latest_entries_file <- list.files("/home/daniel/toggl-entries") %>% 
-  as_tibble() %>% 
-  arrange(desc(value)) %>% 
-  slice(1) %>% 
-  pull()
-
-entries_df <- read_csv(str_c("/home/daniel/toggl-entries/", latest_entries_file)) %>% 
-  mutate(date = lubridate::date(start))
-
 # FOR LOCAL TESTING ONLY, DON'T PUSH THESE FILE PATHS
 
 #latest_entries_file <- list.files(here::here("toggl-entries")) %>% 
@@ -46,27 +37,6 @@ entries_df <- read_csv(str_c("/home/daniel/toggl-entries/", latest_entries_file)
 
 #entries_df <- read_csv("https://raw.githubusercontent.com/ddstats1/time-tracking/master/tracker/time_entries-2023-05-05.csv") %>% 
 #  mutate(date = lubridate::date(start))
-
-
-
-
-# get df's with daily/weekly/monthly/yearly totals by project
-daily_totals <- entries_df %>% 
-  group_by(date, project_name) %>% 
-  summarise(secs = sum(duration)) %>% 
-  ungroup()
-
-weekly_totals <- entries_df %>% 
-  group_by(week = cut(date, "week"), project_name) %>% 
-  summarise(secs = sum(duration)) %>% 
-  ungroup() %>% 
-  mutate(week = as.Date(week))
-
-monthly_totals <- entries_df %>% 
-  group_by(week = cut(date, "month"), project_name) %>% 
-  summarise(secs = sum(duration)) %>% 
-  ungroup()
-
 
 
 ## Read in daily goals table, create weekly/monthly tables ----------------------------
@@ -109,12 +79,12 @@ clean_some_names <- function(dat, idx, ...) {
 }
 
 
-plot_donut <- function(time_pd = c("day", "week", "month", "year"), project, date_) {
+plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, project, date_) {
   
   if (time_pd == "day") {
     
     totals <- daily_goals_df %>% 
-      left_join(daily_totals, by = c("date", "project_name")) %>% 
+      left_join(totals_df, by = c("date", "project_name")) %>% 
       filter(project_name == {{ project }}, 
              date == as.Date({{ date_ }})) %>% 
       mutate(mins_complete = secs / 60,
@@ -128,7 +98,7 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), project, dat
   } else if (time_pd == "week") {
     
     totals <- weekly_goals_df %>% 
-      left_join(weekly_totals, by = c("week", "project_name")) %>% 
+      left_join(totals_df, by = c("week", "project_name")) %>% 
       filter(project_name == {{ project }}, 
              week == as.Date({{ date_ }})) %>% 
       mutate(mins_complete = secs / 60,
@@ -245,11 +215,11 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), project, dat
 }
 
 # test
-plot_donut("day", "BlueLabs", "2023-05-05")
-plot_donut("week", "BlueLabs", "2023-05-01")
+#plot_donut("day", "BlueLabs", "2023-05-05")
+#plot_donut("week", "BlueLabs", "2023-05-01")
 
-plot_donut("day", "pers-project", "2023-05-05")
-plot_donut("week", "pers-project", "2023-05-01")
+#plot_donut("day", "pers-project", "2023-05-05")
+#plot_donut("week", "pers-project", "2023-05-01")
 
 # top 5 tasks done for a specific project over the last week (and would be
 # cool to be able to switch to last 2/3 weeks, last month, last 4 months, etc)
@@ -316,6 +286,8 @@ ui <- dashboardPage(
       
       tabItem(tabName = "donut",
               
+              
+              
               # FIRST ROW OF BOXES (3 total)
               
               splitLayout(
@@ -325,6 +297,7 @@ ui <- dashboardPage(
                 # BlueLabs donuts
                 
                 fluidRow(
+                  
                   box(
                     title = span("BlueLabs", icon("galactic-republic")), 
                     id = "bl_donuts", 
@@ -343,6 +316,7 @@ ui <- dashboardPage(
                 # Read Books donuts
                 
                 fluidRow(
+                  
                   box(
                     title = span("Read Books", icon("book")), 
                     id = "books_donuts", 
@@ -361,6 +335,7 @@ ui <- dashboardPage(
                 # Pers Project donuts
                 
                 fluidRow(
+                  
                   box(
                     title = span("Pers Projects", icon("list-check")), 
                     id = "proj_donuts", 
@@ -386,7 +361,10 @@ ui <- dashboardPage(
       # should only include tasks that have a goal for this day
       
       tabItem(tabName = "today",
-              999),
+              
+              fluidRow(
+                tableOutput("entries_table")
+              )),
       
       
       ## Reports Page ----------------------------------
@@ -427,12 +405,62 @@ ui <- dashboardPage(
 
 server <- function(input, output, session) {
   
+  # read in entries df every minute (if folder is empty, i.e. .csv has just
+  # been deleted, then wait a few seconds)
+  entries_raw <- reactive({
+    on.exit(invalidateLater(60000))
+    
+    if (length(list.files("/home/daniel/toggl-entries")) == 0) {
+      Sys.sleep(3)
+      read_csv("/home/daniel/toggl-entries/time_entries.csv")
+    } else {
+      read_csv("/home/daniel/toggl-entries/time_entries.csv")
+    }
+  })
+  
+  entries <- reactive({
+    entries_raw() %>% 
+      mutate(start = start - lubridate::hours(4),
+             stop = stop - lubridate::hours(4),
+             date = lubridate::date(start))
+  })
+  
+  # get df's with daily/weekly/monthly/yearly totals by project
+  daily_totals <- reactive({
+    entries() %>% 
+      group_by(date, project_name) %>% 
+      summarise(secs = sum(duration)) %>% 
+      ungroup()
+  })
+  
+  weekly_totals <- reactive({
+    entries() %>% 
+      group_by(week = cut(date, "week"), project_name) %>% 
+      summarise(secs = sum(duration)) %>% 
+      ungroup() %>% 
+      mutate(week = as.Date(week))
+  })
+  
+  monthly_totals <- reactive({
+    entries() %>% 
+      group_by(week = cut(date, "week"), project_name) %>% 
+      summarise(secs = sum(duration)) %>% 
+      ungroup() %>% 
+      mutate(week = as.Date(week))
+  })
+  
+  
+  output$entries_table <- renderTable({
+    entries_()
+  })
+  
   ## Donut Page ----------------------------
   
   ## BlueLabs donuts
   
   output$plot_bl_donut_day <- renderPlot({
     plot_donut(time_pd = "day", 
+               totals_df = daily_totals(),
                project = "BlueLabs", 
                date_ = Sys.Date()) 
   })
@@ -440,12 +468,14 @@ server <- function(input, output, session) {
   output$plot_bl_donut_week <- renderPlot({
     # for week plots, go back to the Monday of this week
     plot_donut(time_pd = "week", 
+               totals_df = weekly_totals(),
                project = "BlueLabs", 
                date_ = lubridate::floor_date(Sys.Date(), "week", 1)) 
   })
   
   output$plot_bl_donut_month <- renderPlot({
     plot_donut(time_pd = "week", 
+               totals_df = weekly_totals(),
                project = "BlueLabs", 
                date_ = lubridate::floor_date(Sys.Date(), "week", 1))
   })
@@ -454,18 +484,21 @@ server <- function(input, output, session) {
   
   output$plot_books_donut_day <- renderPlot({
     plot_donut(time_pd = "day", 
+               totals_df = daily_totals(),
                project = "read-books", 
                date_ = Sys.Date()) 
   })
   
   output$plot_books_donut_week <- renderPlot({
     plot_donut(time_pd = "week", 
+               totals_df = weekly_totals(),
                project = "read-books", 
                date_ = lubridate::floor_date(Sys.Date(), "week", 1)) 
   })
   
   output$plot_books_donut_month <- renderPlot({
     plot_donut(time_pd = "week", 
+               totals_df = weekly_totals(),
                project = "read-books", 
                date_ = lubridate::floor_date(Sys.Date(), "week", 1)) 
   })
@@ -474,18 +507,21 @@ server <- function(input, output, session) {
   
   output$plot_proj_donut_day <- renderPlot({
     plot_donut(time_pd = "day", 
+               totals_df = daily_totals(),
                project = "pers-project", 
                date_ = Sys.Date()) 
   })
   
   output$plot_proj_donut_week <- renderPlot({
     plot_donut(time_pd = "week", 
+               totals_df = weekly_totals(),
                project = "pers-project", 
                date_ = lubridate::floor_date(Sys.Date(), "week", 1)) 
   })
   
   output$plot_proj_donut_month <- renderPlot({
     plot_donut(time_pd = "week", 
+               totals_df = weekly_totals(),
                project = "pers-project", 
                date_ = lubridate::floor_date(Sys.Date(), "week", 1)) 
   })
