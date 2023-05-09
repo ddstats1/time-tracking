@@ -71,7 +71,7 @@ monthly_totals <- entries_df %>%
 
 ## Read in daily goals table, create weekly/monthly tables ----------------------------
 
-daily_goals_df_raw <- read_csv("https://raw.githubusercontent.com/ddstats1/time-tracking/master/tracker/time_goals-2023-05-05.csv")
+daily_goals_df_raw <- read_csv("https://raw.githubusercontent.com/ddstats1/time-tracking/master/tracker/time_goals_2023-05-09.csv")
 
 #daily_goals_df_raw <- read_sheet("1JEtORWEfRUv_6sBLzQzXKrR5Bvc3hs3njQSm6y6Khtk", 
 #                                 sheet = "Daily Goals")
@@ -284,7 +284,7 @@ boxProject <- function(project) {
 # UI ----------------------------------------------------------------------
 
 ui <- dashboardPage(
-
+  
   title = "Box API",
   dashboardHeader(),
   dashboardSidebar(
@@ -301,56 +301,87 @@ ui <- dashboardPage(
       tags$style(HTML('.shiny-split-layout>div {overflow: hidden;}')),
     ),
     
-    # so looks like desktop version on mobile
+    # so mobile version looks just like the desktop version
     tags$head( 
       tags$meta(name = "viewport", content = "width=1600"), 
       uiOutput("body")
     ),
     
+    # add outline to boxes
+    tags$script(HTML("$('.box').eq(0).css('border', '5px solid #3DA0D1');")),
+    
     tabItems(
       
-      ## Donut tab ----------------------------------
+      ## Donut Page ----------------------------------
       
       tabItem(tabName = "donut",
               
-              # first row of boxes
+              # FIRST ROW OF BOXES (3 total)
               
               splitLayout(
-                cellWidths = c("50%", "50%"),
+                # 3 boxes in the first row
+                cellWidths = c("33.33%", "33.33%", "33.33%"),
                 
-                # BL donuts
+                # BlueLabs donuts
+                
                 fluidRow(
                   box(
-                    title = "BlueLabs", 
-                    id = "bl_donut_daily", 
-                    width = 11,
+                    title = span("BlueLabs", icon("galactic-republic")), 
+                    id = "bl_donuts", 
+                    width = 12,
                     
                     # split into thirds -- one section for daily donut, one weekly, one monthly
                     splitLayout(
                       cellWidths = c("33.33%", "33.33%", "33.33%"),
-                      plotOutput("plot_bl_donut_day", height = "200px", width = "200px"),
-                      plotOutput("plot_bl_donut_week", height = "200px", width = "200px"),
-                      plotOutput("plot_bl_donut_month", height = "200px", width = "200px")
+                      plotOutput("plot_bl_donut_day", height = "200px", width = "175px"),
+                      plotOutput("plot_bl_donut_week", height = "200px", width = "175px"),
+                      plotOutput("plot_bl_donut_month", height = "200px", width = "175px")
                     )
                   )
                 ),
                 
-                # read-books donuts
+                # Read Books donuts
+                
                 fluidRow(
                   box(
-                    title = "Read Books", 
-                    id = "books_track", 
-                    width = 11,
-                    column(width = 3, plotOutput("plot_books", height = "200px", width = "200px"))
+                    title = span("Read Books", icon("book")), 
+                    id = "books_donuts", 
+                    width = 12,
+                    
+                    # split into thirds -- one section for daily donut, one weekly, one monthly
+                    splitLayout(
+                      cellWidths = c("33.33%", "33.33%", "33.33%"),
+                      plotOutput("plot_books_donut_day", height = "200px", width = "175px"),
+                      plotOutput("plot_books_donut_week", height = "200px", width = "175px"),
+                      plotOutput("plot_books_donut_month", height = "200px", width = "175px")
+                    )
+                  )
+                ),
+                
+                # Pers Project donuts
+                
+                fluidRow(
+                  box(
+                    title = span("Pers Projects", icon("list-check")), 
+                    id = "proj_donuts", 
+                    width = 12,
+                    
+                    # split into thirds -- one section for daily donut, one weekly, one monthly
+                    splitLayout(
+                      cellWidths = c("33.33%", "33.33%", "33.33%"),
+                      plotOutput("plot_proj_donut_day", height = "200px", width = "175px"),
+                      plotOutput("plot_proj_donut_week", height = "200px", width = "175px"),
+                      plotOutput("plot_proj_donut_month", height = "200px", width = "175px")
+                    )
                   )
                 )
-              ),
+              )
               
-              # second row of boxes
+              # SECOND ROW OF BOXES (3 total)
               
       ),
       
-      ## Today tab ----------------------------------
+      ## Today Page ----------------------------------
       
       # should only include tasks that have a goal for this day
       
@@ -358,9 +389,10 @@ ui <- dashboardPage(
               999),
       
       
-      ## Reports tab ----------------------------------
+      ## Reports Page ----------------------------------
       
       tabItem(tabName = "reports",
+              
               fluidRow(
                 box(
                   title = "BlueLabs", 
@@ -373,7 +405,8 @@ ui <- dashboardPage(
       )
     ),
     
-    tags$head(tags$style('#foo .box-header{ display: none}'))  # target the box header of foo
+    # no box header
+    tags$head(tags$style('#foo .box-header{ display: none}'))
     
     # in the first tab, each box is a project-card with progress summaries (and
     # some other info? list of most done/recent tasks in that project?) on front
@@ -394,22 +427,75 @@ ui <- dashboardPage(
 
 server <- function(input, output, session) {
   
+  ## Donut Page ----------------------------
+  
+  ## BlueLabs donuts
+  
   output$plot_bl_donut_day <- renderPlot({
-    plot_donut("day", "BlueLabs", Sys.Date()) 
+    plot_donut(time_pd = "day", 
+               project = "BlueLabs", 
+               date_ = Sys.Date()) 
   })
   
-  # for week plots, go back to the Monday of this week
   output$plot_bl_donut_week <- renderPlot({
-    plot_donut("week", project = "BlueLabs", date = lubridate::floor_date(Sys.Date(), "week", 1)) 
+    # for week plots, go back to the Monday of this week
+    plot_donut(time_pd = "week", 
+               project = "BlueLabs", 
+               date_ = lubridate::floor_date(Sys.Date(), "week", 1)) 
   })
   
   output$plot_bl_donut_month <- renderPlot({
-    plot_donut("week", project = "BlueLabs", date = lubridate::floor_date(Sys.Date(), "week", 1))
+    plot_donut(time_pd = "week", 
+               project = "BlueLabs", 
+               date_ = lubridate::floor_date(Sys.Date(), "week", 1))
   })
   
-  output$plot_books <- renderPlot({
-    plot_donut("day", project = "read-books", date = Sys.Date()) 
+  ## Books donuts
+  
+  output$plot_books_donut_day <- renderPlot({
+    plot_donut(time_pd = "day", 
+               project = "read-books", 
+               date_ = Sys.Date()) 
   })
+  
+  output$plot_books_donut_week <- renderPlot({
+    plot_donut(time_pd = "week", 
+               project = "read-books", 
+               date_ = lubridate::floor_date(Sys.Date(), "week", 1)) 
+  })
+  
+  output$plot_books_donut_month <- renderPlot({
+    plot_donut(time_pd = "week", 
+               project = "read-books", 
+               date_ = lubridate::floor_date(Sys.Date(), "week", 1)) 
+  })
+  
+  ## Pers Project donuts
+  
+  output$plot_proj_donut_day <- renderPlot({
+    plot_donut(time_pd = "day", 
+               project = "pers-project", 
+               date_ = Sys.Date()) 
+  })
+  
+  output$plot_proj_donut_week <- renderPlot({
+    plot_donut(time_pd = "week", 
+               project = "pers-project", 
+               date_ = lubridate::floor_date(Sys.Date(), "week", 1)) 
+  })
+  
+  output$plot_proj_donut_month <- renderPlot({
+    plot_donut(time_pd = "week", 
+               project = "pers-project", 
+               date_ = lubridate::floor_date(Sys.Date(), "week", 1)) 
+  })
+  
+  
+  ## Today Page ----------------------------
+  
+  
+  
+  ## Reports Page ----------------------------
   
   output$top_tasks_bl <- DT::renderDataTable(
     get_top_tasks(project = "BlueLabs", start_date = input$bl_tasks_start, end_date = input$bl_tasks_end),
