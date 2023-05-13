@@ -200,11 +200,11 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, g
 } # END OF plot_donut() FCT
 
 # test
-time_pd <- "day"
-totals_df <- daily_totals_df
-goals_df <- daily_goals_df
-project <- "pers-project"
-date_ <- "2023-05-12"
+#time_pd <- "day"
+#totals_df <- daily_totals_df
+#goals_df <- daily_goals_df
+#project <- "pers-project"
+#date_ <- "2023-05-12"
 
 #plot_donut(time_pd, totals_df, goals_df, project, date_)
 
