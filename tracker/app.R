@@ -19,27 +19,27 @@ library(janitor)
 # for testing only -- the actual app only references the reactive versions
 # of these, e.g. daily_totals(), weekly_totals(), ...
 
-entries_df <- read_csv(here::here("toggl-entries", "time_entries.csv")) %>% 
-  mutate(start = start - lubridate::hours(4),
-         stop = stop - lubridate::hours(4),
-         date = lubridate::date(start))
+#entries_df <- read_csv(here::here("toggl-entries", "time_entries.csv")) %>% 
+#  mutate(start = start - lubridate::hours(4),
+#         stop = stop - lubridate::hours(4),
+#         date = lubridate::date(start))
 
-daily_totals_df <- entries_df %>% 
-  group_by(date, project_name) %>% 
-  summarise(secs = sum(duration)) #%>% 
+#daily_totals_df <- entries_df %>% 
+#  group_by(date, project_name) %>% 
+#  summarise(secs = sum(duration)) #%>% 
 #ungroup()
 
-weekly_totals_df <- entries_df %>% 
-  group_by(week = cut(date, "week"), project_name) %>% 
-  summarise(secs = sum(duration)) %>% 
+#weekly_totals_df <- entries_df %>% 
+#  group_by(week = cut(date, "week"), project_name) %>% 
+#  summarise(secs = sum(duration)) %>% 
   #ungroup() %>% 
-  mutate(week = as.Date(week))
+#  mutate(week = as.Date(week))
 
-monthly_totals_df <- entries_df %>% 
-  group_by(month = cut(date, "month"), project_name) %>% 
-  summarise(secs = sum(duration)) %>% 
+#monthly_totals_df <- entries_df %>% 
+#  group_by(month = cut(date, "month"), project_name) %>% 
+#  summarise(secs = sum(duration)) %>% 
   #ungroup() %>% 
-  mutate(month = as.Date(month))
+#  mutate(month = as.Date(month))
 
 
 
@@ -726,6 +726,7 @@ server <- function(input, output, session) {
                project = "stretch & strength", 
                date_ = lubridate::floor_date(Sys.Date(), "month", 1)) 
   })
+  
   
   ## Exercise donuts
   
