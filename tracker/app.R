@@ -438,6 +438,14 @@ ui <- dashboardPage(
                                   icon = icon("person-running"),
                                   box_id = "exercise_donut",
                                   plot_id = "exercise")
+                ),
+                
+                # Personal Project donuts
+                fluidRow(
+                  make_donuts_box(box_title = "Exercise",
+                                  icon = icon("checklist"),
+                                  box_id = "proj_donut",
+                                  plot_id = "proj")
                 )
                 
               )
@@ -585,6 +593,7 @@ server <- function(input, output, session) {
   
   ## Donut Page plots ----------------------------
   
+  
   ## BlueLabs donuts
   
   output$plot_bl_donut_day <- renderPlot({
@@ -626,6 +635,7 @@ server <- function(input, output, session) {
                date_ = lubridate::floor_date(Sys.Date(), "month", 1))
   })
   
+  
   ## Books donuts
   
   output$plot_books_donut_day <- renderPlot({
@@ -662,6 +672,7 @@ server <- function(input, output, session) {
                project = "read-books", 
                date_ = lubridate::floor_date(Sys.Date(), "month", 1)) 
   })
+  
   
   ## Organize / Build Skills donuts
   
@@ -738,6 +749,7 @@ server <- function(input, output, session) {
                date_ = lubridate::floor_date(Sys.Date(), "month", 1)) 
   })
   
+  
   ## Learn Skill donuts
   
   output$plot_skill_donut_day <- renderPlot({
@@ -775,6 +787,7 @@ server <- function(input, output, session) {
                date_ = lubridate::floor_date(Sys.Date(), "month", 1)) 
   })
   
+  
   ## Cooking/Baking donuts
   
   output$plot_cooking_donut_day <- renderPlot({
@@ -811,6 +824,7 @@ server <- function(input, output, session) {
                project = "cooking/baking", 
                date_ = lubridate::floor_date(Sys.Date(), "month", 1)) 
   })
+  
   
   ## Stretch & Strength donuts
   
