@@ -32,13 +32,13 @@ library(janitor)
 #weekly_totals_df <- entries_df %>% 
 #  group_by(week = cut(date, "week"), project_name) %>% 
 #  summarise(secs = sum(duration)) %>% 
-  #ungroup() %>% 
+#ungroup() %>% 
 #  mutate(week = as.Date(week))
 
 #monthly_totals_df <- entries_df %>% 
 #  group_by(month = cut(date, "month"), project_name) %>% 
 #  summarise(secs = sum(duration)) %>% 
-  #ungroup() %>% 
+#ungroup() %>% 
 #  mutate(month = as.Date(month))
 
 
@@ -68,6 +68,12 @@ monthly_goals_df <- daily_goals_df %>%
             n_days_goal_entered = sum(n_days_goal_entered)) %>% 
   #ungroup() %>% 
   mutate(month = as.Date(month))
+
+
+
+# then, task goals
+
+
 
 
 
@@ -191,7 +197,7 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, g
            caption = plot_caption) +
       theme_void() +
       theme(plot.title = element_text(hjust = 0.5, vjust = -2.25, size = 20),
-            plot.caption = element_text(hjust = 0.5, vjust = 25, size = 9, color = "grey2"))
+            plot.caption = element_text(hjust = 0.5, vjust = 25, size = 8.2, color = "grey2"))
     
   }
   
@@ -242,9 +248,9 @@ make_donuts_box <- function(box_title, icon, box_id, plot_id) {
     # split into thirds -- one section for daily donut, one weekly, one monthly
     splitLayout(
       cellWidths = c("33.33%", "33.33%", "33.33%"),
-      plotOutput(str_c("plot_", plot_id, "_donut_day"), height = "175px", width = "175px"),
-      plotOutput(str_c("plot_", plot_id, "_donut_week"), height = "175px", width = "175px"),
-      plotOutput(str_c("plot_", plot_id, "_donut_month"), height = "175px", width = "175px")
+      plotOutput(str_c("plot_", plot_id, "_donut_day"), height = "175px", width = "150px"),
+      plotOutput(str_c("plot_", plot_id, "_donut_week"), height = "175px", width = "150px"),
+      plotOutput(str_c("plot_", plot_id, "_donut_month"), height = "175px", width = "150px")
     )
   )
 }
@@ -299,7 +305,7 @@ ui <- dashboardPage(
       uiOutput("body")
     ),
     
-    # add outline to boxes
+    # add outline to boxes (not currently working, it seems)
     tags$script(HTML("$('.box').eq(0).css('border', '5px solid #3DA0D1');")),
     
     tabItems(
@@ -322,20 +328,20 @@ ui <- dashboardPage(
                                   plot_id = "bl")
                 ),
                 
-                # Read Books donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Read Books",
-                                  icon = icon("book"),
-                                  box_id = "books_donut",
-                                  plot_id = "books")
-                ),
-                
                 # Organize/Build Skills donuts
                 fluidRow(
                   make_donuts_box(box_title = "Organize/Build Skills", 
                                   icon = icon("seedling"),
                                   box_id = "organize_donuts",
                                   plot_id = "organize")
+                ),
+                
+                # Read Books donuts
+                fluidRow(
+                  make_donuts_box(box_title = "Read Books",
+                                  icon = icon("book"),
+                                  box_id = "books_donut",
+                                  plot_id = "books")
                 )
               ),
               
@@ -346,13 +352,23 @@ ui <- dashboardPage(
                 # 3 boxes in the first row
                 cellWidths = c("33.33%", "33.33%", "33.33%"),
                 
-                # Pers Project donuts
+                # Chores/Responsibilities donuts
                 fluidRow(
-                  make_donuts_box(box_title = "Pers Projects",
-                                  icon = icon("list-check"),
-                                  box_id = "proj_donut",
-                                  plot_id = "proj")
+                  make_donuts_box(box_title = "Chores/Responsibilities",
+                                  icon = icon("broom-wide"),
+                                  box_id = "resp_donut",
+                                  plot_id = "resp")
                 ),
+                
+                
+                # Learn Skill donuts
+                fluidRow(
+                  make_donuts_box(box_title = "Learn Skill",
+                                  icon = icon("guitar"),
+                                  box_id = "skill_donut",
+                                  plot_id = "skill")
+                ),
+                
                 
                 # Cooking/Baking donuts
                 fluidRow(
@@ -360,15 +376,8 @@ ui <- dashboardPage(
                                   icon = icon("burger"),
                                   box_id = "cooking_donut",
                                   plot_id = "cooking")
-                ),
-                
-                # Pers Project donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Learn Skill",
-                                  icon = icon("guitar"),
-                                  box_id = "skill_donut",
-                                  plot_id = "skill")
                 )
+                
               ),
               
               
@@ -377,6 +386,43 @@ ui <- dashboardPage(
               splitLayout(
                 # 3 boxes in the first row
                 cellWidths = c("33.33%", "33.33%", "33.33%"),
+                
+                
+                # Read/Watch Arts/Vids donuts
+                fluidRow(
+                  make_donuts_box(box_title = "Read/Watch Arts/Vids/News",
+                                  icon = icon("newspaper"),
+                                  box_id = "arts_donut",
+                                  plot_id = "arts")
+                ),
+                
+                
+                # Review/Research donuts
+                fluidRow(
+                  make_donuts_box(box_title = "Review/Research",
+                                  icon = icon("book"),
+                                  box_id = "rr_donut",
+                                  plot_id = "rr")
+                ),
+                
+                
+                # Journal/Plan donuts
+                fluidRow(
+                  make_donuts_box(box_title = "Journal/Plan",
+                                  icon = icon("notebook"),
+                                  box_id = "journal_donut",
+                                  plot_id = "journal")
+                )
+                
+              ),
+              
+              
+              # FOURTH ROW OF BOXES (3 total)
+              
+              splitLayout(
+                # 3 boxes in the first row
+                cellWidths = c("33.33%", "33.33%", "33.33%"),
+                
                 
                 # Stretch & Strength donuts
                 fluidRow(
@@ -392,18 +438,9 @@ ui <- dashboardPage(
                                   icon = icon("person-running"),
                                   box_id = "exercise_donut",
                                   plot_id = "exercise")
-                ),
-                
-                # Review/Research donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Review/Research",
-                                  icon = icon("book"),
-                                  box_id = "rr_donut",
-                                  plot_id = "rr")
                 )
+                
               )
-              
-              # FOURTH ROW OF BOXES (3 total)
               
               
       ), # end of donut page
@@ -458,6 +495,8 @@ ui <- dashboardPage(
 
 server <- function(input, output, session) {
   
+  ## Read in toggl entries --------------------
+  
   # read in updated entries df every minute (if folder is empty, i.e. .csv has 
   # just been deleted, then wait a few seconds)
   
@@ -474,8 +513,11 @@ server <- function(input, output, session) {
   
   entries <- reactive({
     entries_raw() %>% 
-      mutate(start = start - lubridate::hours(4),
-             stop = stop - lubridate::hours(4),
+      # subtracting 4 hours gets the actual time EST...
+      # then i'm taking away another 3 hours so that if i do something at 2am 
+      # (up to 3am here, using minus 3 hours), it'll count for the previous day
+      mutate(start = start - lubridate::hours(7),
+             stop = stop - lubridate::hours(7),
              date = lubridate::date(start))
   })
   
@@ -504,7 +546,7 @@ server <- function(input, output, session) {
   
   
   
-  # read in goals .csv from GitHub every 15 minutes
+  ## Read in goals spreadsheet --------------------
   
   goals_raw <- reactive({
     on.exit(invalidateLater(60000 * 15)) # 60,000 ms = 1 minute
