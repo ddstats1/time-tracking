@@ -19,55 +19,55 @@ library(janitor)
 # for testing only -- the actual app only references the reactive versions
 # of these, e.g. daily_totals(), weekly_totals(), ...
 
-#entries_df <- read_csv(here::here("toggl-entries", "time_entries.csv")) %>% 
-#  mutate(start = start - lubridate::hours(4),
-#         stop = stop - lubridate::hours(4),
-#         date = lubridate::date(start))
-
-#daily_totals_df <- entries_df %>% 
-#  group_by(date, project_name) %>% 
-#  summarise(secs = sum(duration)) #%>% 
-#ungroup()
-
-#weekly_totals_df <- entries_df %>% 
-#  group_by(week = cut(date, "week"), project_name) %>% 
-#  summarise(secs = sum(duration)) %>% 
-#ungroup() %>% 
-#  mutate(week = as.Date(week))
-
-#monthly_totals_df <- entries_df %>% 
-#  group_by(month = cut(date, "month"), project_name) %>% 
-#  summarise(secs = sum(duration)) %>% 
-#ungroup() %>% 
-#  mutate(month = as.Date(month))
+# entries_df <- read_csv(here::here("toggl-entries", "time_entries.csv")) %>%
+#   mutate(start = start - lubridate::hours(7),
+#          stop = stop - lubridate::hours(7),
+#          date = lubridate::date(start))
+# 
+# daily_totals_df <- entries_df %>%
+#   group_by(date, project_name) %>%
+#   summarise(secs = sum(duration)) #%>%
+# #ungroup()
+# 
+# weekly_totals_df <- entries_df %>%
+#   group_by(week = cut(date, "week"), project_name) %>%
+#   summarise(secs = sum(duration)) %>%
+# #ungroup() %>%
+#   mutate(week = as.Date(week))
+# 
+# monthly_totals_df <- entries_df %>%
+#   group_by(month = cut(date, "month"), project_name) %>%
+#   summarise(secs = sum(duration)) %>%
+# #ungroup() %>%
+#   mutate(month = as.Date(month))
 
 
 
 ## Read in daily goals table, create weekly/monthly tables ----------------------------
 
-daily_goals_df_raw <- read_csv("https://raw.githubusercontent.com/ddstats1/time-tracking/master/tracker/time_goals.csv")
-
-daily_goals_df <- daily_goals_df_raw %>% 
-  pivot_longer(cols = 2:ncol(.), 
-               names_to = "project_name", 
-               values_to = "mins_goal") %>% 
-  mutate(date = lubridate::date(date),
-         # janky but makes blank ggplot() return work nice...
-         n_days_goal_entered = ifelse(mins_goal %in% c(NA, 0), 0, 1))
-
-weekly_goals_df <- daily_goals_df %>% 
-  group_by(week = cut(date, "week"), project_name) %>% 
-  summarise(mins_goal = sum(mins_goal, na.rm = TRUE),
-            n_days_goal_entered = sum(n_days_goal_entered)) %>% 
-  #ungroup() %>% 
-  mutate(week = as.Date(week))
-
-monthly_goals_df <- daily_goals_df %>% 
-  group_by(month = cut(date, "month"), project_name) %>% 
-  summarise(mins_goal = sum(mins_goal, na.rm = TRUE),
-            n_days_goal_entered = sum(n_days_goal_entered)) %>% 
-  #ungroup() %>% 
-  mutate(month = as.Date(month))
+# daily_goals_df_raw <- read_csv("https://raw.githubusercontent.com/ddstats1/time-tracking/master/tracker/time_goals.csv")
+# 
+# daily_goals_df <- daily_goals_df_raw %>% 
+#   pivot_longer(cols = 2:ncol(.), 
+#                names_to = "project_name", 
+#                values_to = "mins_goal") %>% 
+#   mutate(date = lubridate::date(date),
+#          # janky but makes blank ggplot() return work nice...
+#          n_days_goal_entered = ifelse(mins_goal %in% c(NA, 0), 0, 1))
+# 
+# weekly_goals_df <- daily_goals_df %>% 
+#   group_by(week = cut(date, "week"), project_name) %>% 
+#   summarise(mins_goal = sum(mins_goal, na.rm = TRUE),
+#             n_days_goal_entered = sum(n_days_goal_entered)) %>% 
+#   #ungroup() %>% 
+#   mutate(week = as.Date(week))
+# 
+# monthly_goals_df <- daily_goals_df %>% 
+#   group_by(month = cut(date, "month"), project_name) %>% 
+#   summarise(mins_goal = sum(mins_goal, na.rm = TRUE),
+#             n_days_goal_entered = sum(n_days_goal_entered)) %>% 
+#   #ungroup() %>% 
+#   mutate(month = as.Date(month))
 
 
 
@@ -501,7 +501,7 @@ server <- function(input, output, session) {
   # just been deleted, then wait a few seconds)
   
   entries_raw <- reactive({
-    on.exit(invalidateLater(60000 * 3)) # 60,000 ms = 1 minute
+    invalidateLater(60000 * 3) # 60,000 ms = 1 minute
     
     if (length(list.files("/home/daniel/toggl-entries")) == 0) {
       Sys.sleep(3)
@@ -514,10 +514,10 @@ server <- function(input, output, session) {
   entries <- reactive({
     entries_raw() %>% 
       # subtracting 4 hours gets the actual time EST...
-      # then i'm taking away another 3 hours so that if i do something at 2am 
-      # (up to 3am here, using minus 3 hours), it'll count for the previous day
-      mutate(start = start - lubridate::hours(7),
-             stop = stop - lubridate::hours(7),
+      # then i'm taking away another 4 hours so that if i do something at 2 or 3am 
+      # (up to 4am here, using minus 4 hours), it'll count for the previous day
+      mutate(start = start - lubridate::hours(8),
+             stop = stop - lubridate::hours(8),
              date = lubridate::date(start))
   })
   
@@ -549,7 +549,7 @@ server <- function(input, output, session) {
   ## Read in goals spreadsheet --------------------
   
   goals_raw <- reactive({
-    on.exit(invalidateLater(60000 * 15)) # 60,000 ms = 1 minute
+    invalidateLater(60000 * 15) # 60,000 ms = 1 minute
     read_csv("https://raw.githubusercontent.com/ddstats1/time-tracking/master/tracker/time_goals.csv")
   })
   
@@ -588,11 +588,25 @@ server <- function(input, output, session) {
   ## BlueLabs donuts
   
   output$plot_bl_donut_day <- renderPlot({
+    
+    # if current time is between 12:00:01 am and 4:00:00 am, then want to display
+    # plot from yesterday's date instead of Sys.Date()
+    
+    curr_time <- Sys.time() - hours(4)
+    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
+                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    
+    if (curr_time %within% latenight_interval) {
+      date_adj <- Sys.Date() - days(1)
+    } else {
+      date_adj <- Sys.Date()
+    }
+    
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
                project = "BlueLabs", 
-               date_ = Sys.Date()) 
+               date_ = date_adj) 
   })
   
   # for week plots, go back to the Monday of this week
@@ -615,11 +629,22 @@ server <- function(input, output, session) {
   ## Books donuts
   
   output$plot_books_donut_day <- renderPlot({
+    
+    curr_time <- Sys.time() - hours(4)
+    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
+                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    
+    if (curr_time %within% latenight_interval) {
+      date_adj <- Sys.Date() - days(1)
+    } else {
+      date_adj <- Sys.Date()
+    }
+    
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
                project = "read-books", 
-               date_ = Sys.Date()) 
+               date_ = date_adj)
   })
   
   output$plot_books_donut_week <- renderPlot({
@@ -641,11 +666,22 @@ server <- function(input, output, session) {
   ## Organize / Build Skills donuts
   
   output$plot_organize_donut_day <- renderPlot({
+    
+    curr_time <- Sys.time() - hours(4)
+    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
+                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    
+    if (curr_time %within% latenight_interval) {
+      date_adj <- Sys.Date() - days(1)
+    } else {
+      date_adj <- Sys.Date()
+    }
+    
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
                project = "organize/build-skills", 
-               date_ = Sys.Date()) 
+               date_ = date_adj) 
   })
   
   output$plot_organize_donut_week <- renderPlot({
@@ -668,11 +704,22 @@ server <- function(input, output, session) {
   ## Pers Project donuts
   
   output$plot_proj_donut_day <- renderPlot({
+    
+    curr_time <- Sys.time() - hours(4)
+    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
+                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    
+    if (curr_time %within% latenight_interval) {
+      date_adj <- Sys.Date() - days(1)
+    } else {
+      date_adj <- Sys.Date()
+    }
+    
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
                project = "pers-project", 
-               date_ = Sys.Date()) 
+               date_ = date_adj) 
   })
   
   output$plot_proj_donut_week <- renderPlot({
@@ -694,11 +741,22 @@ server <- function(input, output, session) {
   ## Learn Skill donuts
   
   output$plot_skill_donut_day <- renderPlot({
+    
+    curr_time <- Sys.time() - hours(4)
+    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
+                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    
+    if (curr_time %within% latenight_interval) {
+      date_adj <- Sys.Date() - days(1)
+    } else {
+      date_adj <- Sys.Date()
+    }
+    
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
                project = "learn-skill", 
-               date_ = Sys.Date()) 
+               date_ = date_adj) 
   })
   
   output$plot_skill_donut_week <- renderPlot({
@@ -720,11 +778,22 @@ server <- function(input, output, session) {
   ## Cooking/Baking donuts
   
   output$plot_cooking_donut_day <- renderPlot({
+    
+    curr_time <- Sys.time() - hours(4)
+    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
+                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    
+    if (curr_time %within% latenight_interval) {
+      date_adj <- Sys.Date() - days(1)
+    } else {
+      date_adj <- Sys.Date()
+    }
+    
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
                project = "cooking/baking", 
-               date_ = Sys.Date()) 
+               date_ = date_adj) 
   })
   
   output$plot_cooking_donut_week <- renderPlot({
@@ -746,11 +815,22 @@ server <- function(input, output, session) {
   ## Stretch & Strength donuts
   
   output$plot_ss_donut_day <- renderPlot({
+    
+    curr_time <- Sys.time() - hours(4)
+    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
+                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    
+    if (curr_time %within% latenight_interval) {
+      date_adj <- Sys.Date() - days(1)
+    } else {
+      date_adj <- Sys.Date()
+    }
+    
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
                project = "stretch & strength", 
-               date_ = Sys.Date()) 
+               date_ = date_adj) 
   })
   
   output$plot_ss_donut_week <- renderPlot({
@@ -773,11 +853,22 @@ server <- function(input, output, session) {
   ## Exercise donuts
   
   output$plot_exercise_donut_day <- renderPlot({
+    
+    curr_time <- Sys.time() - hours(4)
+    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
+                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    
+    if (curr_time %within% latenight_interval) {
+      date_adj <- Sys.Date() - days(1)
+    } else {
+      date_adj <- Sys.Date()
+    }
+    
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
                project = "exercise", 
-               date_ = Sys.Date()) 
+               date_ = date_adj) 
   })
   
   output$plot_exercise_donut_week <- renderPlot({
@@ -800,11 +891,22 @@ server <- function(input, output, session) {
   ## Review/Research donuts
   
   output$plot_rr_donut_day <- renderPlot({
+    
+    curr_time <- Sys.time() - hours(4)
+    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
+                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    
+    if (curr_time %within% latenight_interval) {
+      date_adj <- Sys.Date() - days(1)
+    } else {
+      date_adj <- Sys.Date()
+    }
+    
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
                project = "review/research", 
-               date_ = Sys.Date()) 
+               date_ = date_adj) 
   })
   
   output$plot_rr_donut_week <- renderPlot({
@@ -827,11 +929,22 @@ server <- function(input, output, session) {
   ## Read/Watch Arts/Vids/News donuts
   
   output$plot_arts_donut_day <- renderPlot({
+    
+    curr_time <- Sys.time() - hours(4)
+    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
+                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    
+    if (curr_time %within% latenight_interval) {
+      date_adj <- Sys.Date() - days(1)
+    } else {
+      date_adj <- Sys.Date()
+    }
+    
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
                project = "read/watch-arts/vids/news", 
-               date_ = Sys.Date()) 
+               date_ = date_adj) 
   })
   
   output$plot_arts_donut_week <- renderPlot({
@@ -854,11 +967,22 @@ server <- function(input, output, session) {
   ## Responsibilities/Chores donuts
   
   output$plot_resp_donut_day <- renderPlot({
+    
+    curr_time <- Sys.time() - hours(4)
+    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
+                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    
+    if (curr_time %within% latenight_interval) {
+      date_adj <- Sys.Date() - days(1)
+    } else {
+      date_adj <- Sys.Date()
+    }
+    
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
                project = "responsibilities/chores", 
-               date_ = Sys.Date()) 
+               date_ = date_adj) 
   })
   
   output$plot_resp_donut_week <- renderPlot({
@@ -881,11 +1005,22 @@ server <- function(input, output, session) {
   ## Journal/Plan donuts
   
   output$plot_journal_donut_day <- renderPlot({
+    
+    curr_time <- Sys.time() - hours(4)
+    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
+                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    
+    if (curr_time %within% latenight_interval) {
+      date_adj <- Sys.Date() - days(1)
+    } else {
+      date_adj <- Sys.Date()
+    }
+    
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
                project = "journal/plan", 
-               date_ = Sys.Date()) 
+               date_ = date_adj) 
   })
   
   output$plot_journal_donut_week <- renderPlot({
@@ -927,12 +1062,3 @@ server <- function(input, output, session) {
 shinyApp(ui, server)
 
 
-
-# Setup ----------------------------------------------------------------------
-
-#api <- togglr::set_toggl_api_token("5198c02c893360bb30c4cc1bf8b069ec")
-
-#df <- togglr::get_time_entries(api, since = "2023-01-01")
-
-#df %>% 
-#write_csv(here::here("time-entries.csv"))
