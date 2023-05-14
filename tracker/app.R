@@ -442,7 +442,7 @@ ui <- dashboardPage(
                 
                 # Personal Project donuts
                 fluidRow(
-                  make_donuts_box(box_title = "Exercise",
+                  make_donuts_box(box_title = "Personal Projects",
                                   icon = icon("checklist"),
                                   box_id = "proj_donut",
                                   plot_id = "proj")
