@@ -196,7 +196,7 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, g
            # 25/90m label at bottom of chart
            caption = plot_caption) +
       theme_void() +
-      theme(plot.title = element_text(hjust = 0.5, vjust = -2.25, size = 20),
+      theme(plot.title = element_text(hjust = 0.5, vjust = -2.25, size = 16),
             plot.caption = element_text(hjust = 0.5, vjust = 25, size = 8.2, color = "grey2"))
     
   }
