@@ -248,9 +248,9 @@ make_donuts_box <- function(box_title, icon, box_id, plot_id) {
     # split into thirds -- one section for daily donut, one weekly, one monthly
     splitLayout(
       cellWidths = c("33.33%", "33.33%", "33.33%"),
-      plotOutput(str_c("plot_", plot_id, "_donut_day"), height = "175px", width = "125px"),
-      plotOutput(str_c("plot_", plot_id, "_donut_week"), height = "175px", width = "125px"),
-      plotOutput(str_c("plot_", plot_id, "_donut_month"), height = "175px", width = "125px")
+      plotOutput(str_c("plot_", plot_id, "_donut_day"), height = "175px", width = "135px"),
+      plotOutput(str_c("plot_", plot_id, "_donut_week"), height = "175px", width = "135px"),
+      plotOutput(str_c("plot_", plot_id, "_donut_month"), height = "175px", width = "135px")
     )
   )
 }
