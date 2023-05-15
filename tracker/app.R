@@ -197,7 +197,7 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, g
            caption = plot_caption) +
       theme_void() +
       theme(plot.title = element_text(hjust = 0.5, vjust = -2.25, size = 16),
-            plot.caption = element_text(hjust = 0.5, vjust = 25, size = 8.2, color = "grey2"))
+            plot.caption = element_text(hjust = 0.5, vjust = 20, size = 8.2, color = "grey2"))
     
   }
   
@@ -1074,5 +1074,4 @@ server <- function(input, output, session) {
 
 # run app locally
 shinyApp(ui, server)
-
 
