@@ -256,7 +256,7 @@ plot_calendar <- function(start_date, end_date, project, totals_df, goals_df) {
                                     mins_goal == 0 ~ NA_character_,
                                     mins_complete >= mins_goal ~ "1",
                                     # don't want today to be red if haven't completed
-                                    date == Sys.Date() & (mins_complete < mins_goal) ~ NA_character_
+                                    date == Sys.Date() & (mins_complete < mins_goal) ~ NA_character_,
                                     mins_complete < mins_goal ~ "0")) %>% 
     pull(did_complete)
   
