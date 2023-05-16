@@ -274,7 +274,13 @@ plot_calendar <- function(start_date, end_date, project, totals_df, goals_df) {
   if (length(unique(vec_completed)) < 3) {
     
     loc_to_change <- which(is.na(vec_completed), NA_character_)[1]
-    vec_completed[loc_to_change] <- "1"
+    
+    if (unique(vec_completed) == c(NA_character_, "0")) {
+      vec_completed[loc_to_change] <- "1"
+    } else {
+      vec_completed[loc_to_change] <- "0"
+    }
+    
   }
   
   cal <- calendR(
@@ -632,7 +638,7 @@ ui <- dashboardPage(
           
           fluidRow(make_calendar_box(project = "chores/responsibilities", id = "chores")),
           fluidRow(make_calendar_box(project = "learn-skill", id = "skill")),
-          fluidRow(make_calendar_box(project = "cooking", id = "cooking"))
+          fluidRow(make_calendar_box(project = "cooking/baking", id = "cooking"))
         ),
         
         
