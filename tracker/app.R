@@ -237,6 +237,57 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, g
 
 
 
+
+
+
+plot_calendar <- function(start_date, end_date, project, totals_df, goals_df) {
+  
+  vec_completed <- goals_df %>% 
+    left_join(totals_df, by = c("date", "project_name")) %>% 
+    filter(project_name == {{ project }},
+           date >= start_date,
+           date <= end_date) %>% 
+    mutate(mins_complete = secs / 60,
+           # if missing, make 0
+           mins_complete = ifelse(is.na(mins_complete), 0, mins_complete),
+           mins_goal = ifelse(is.na(mins_goal), 0, mins_goal),
+           did_complete = case_when(mins_goal == 0 ~ NA_character_,
+                                    mins_complete >= mins_goal ~ "1",
+                                    mins_complete < mins_goal ~ "0")) %>% 
+    pull(did_complete)
+  
+  # make today NA if it's currently 0
+  if (!is.na(vec_completed[length(vec_completed)])) {
+    
+    vec_completed[length(vec_completed)] <- NA
+  }
+  
+  # IF only NA and 0's (i.e. haven't completed a day for this project, which
+  # is cool, i want new projects from time to time), 
+  # THEN change the very first NA to a "1"
+  
+  if (length(unique(vec_completed)) < 3) {
+    
+    loc_to_change <- which(is.na(vec_completed), NA_character_)[1]
+    vec_completed[loc_to_change] <- "1"
+  }
+  
+  cal <- calendR(
+    start_date = start_date,
+    end_date = end_date,
+    special.days = vec_completed,
+    special.col = 2:3,
+    title = ""
+  )
+  
+  return(cal)
+  
+}
+
+#plot_calendar(start_date = "2023-05-01", end_date = "2023-05-15", project = "BlueLabs")
+
+
+
 # task donut for the day will be 1-3 (sometimes 4 or 5) tasks that i want to work
 # on that day
 
@@ -263,10 +314,29 @@ make_donuts_box <- function(box_title, icon, box_id, plot_id) {
   )
 }
 
+
+make_calendar_box <- function(project, id) {
+  box(
+    title = str_to_title(project),
+    id = id,
+    width = 12,
+    
+    dateRangeInput(str_c(id, "_cal_dates"), "", 
+                   # default range: last month and this month
+                   start = str_c(year(Sys.Date()), "-", "0", month(Sys.Date()) - 1, "-01"),
+                   end = Sys.Date()),
+    
+    plotOutput(str_c(id, "_cal_plot"))
+  ) 
+}
+
+
+
 # top 5 tasks done for a specific project over the last week (and would be
 # cool to be able to switch to last 2/3 weeks, last month, last 4 months, etc)
 get_top_tasks <- function(project, start_date, end_date) {
-  entries_df %>% 
+  
+  top_tasks <- entries_df %>% 
     filter(project_name == {{ project }},
            date >= {{ start_date }},
            date <= {{ end_date }}) %>% 
@@ -281,6 +351,8 @@ get_top_tasks <- function(project, start_date, end_date) {
            hrs = round(hrs, 1))
   # can slice if necessary, as well, if table gets too big. or maybe
   # have a rows-limit option in the app
+  
+  return(top_tasks)
 }
 
 # test
@@ -398,9 +470,9 @@ ui <- dashboardPage(
                 cellWidths = c("33.33%", "33.33%", "33.33%"),
                 
                 
-                # Read/Watch Arts/Vids donuts
+                # articles/essays/videos/news
                 fluidRow(
-                  make_donuts_box(box_title = "Read/Watch Arts/Vids/News",
+                  make_donuts_box(box_title = "articles/essays/videos/news",
                                   icon = icon("newspaper"),
                                   box_id = "arts_donut",
                                   plot_id = "arts")
@@ -537,11 +609,17 @@ ui <- dashboardPage(
       tabItem(
         tabName = "calendars",
         
+        # two boxes in first row
         
-        
-        
-        
+        splitLayout(
+          cellWidths = c("33.33%", "33.33%"),
+          
+          fluidRow(make_calendar_box(project = "BlueLabs", id = "bl")),
+          fluidRow(make_calendar_box(project = "organize/build-skills", id = "org")),
+          fluidRow(make_calendar_box(project = "read-books", id = "books"))
+        )
       ),
+      
       
       ## Tasks Page ----------------------------------
       
@@ -558,11 +636,13 @@ ui <- dashboardPage(
               
               
               
-              
-      )
-    )
-  )
-)
+      )       
+      
+    ) # end of tab items
+    
+  ) # end of dashboard body
+  
+) # end of dashboard page
 
 
 
@@ -681,7 +761,9 @@ server <- function(input, output, session) {
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
     # plot from yesterday's date instead of Sys.Date()
     
-    curr_time <- Sys.time()
+    curr_time <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -720,7 +802,7 @@ server <- function(input, output, session) {
   
   output$plot_books_donut_day <- renderPlot({
     
-    curr_time <- Sys.time()
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -758,7 +840,7 @@ server <- function(input, output, session) {
   
   output$plot_organize_donut_day <- renderPlot({
     
-    curr_time <- Sys.time()
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -796,7 +878,7 @@ server <- function(input, output, session) {
   
   output$plot_proj_donut_day <- renderPlot({
     
-    curr_time <- Sys.time()
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -834,7 +916,7 @@ server <- function(input, output, session) {
   
   output$plot_skill_donut_day <- renderPlot({
     
-    curr_time <- Sys.time()
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -872,7 +954,7 @@ server <- function(input, output, session) {
   
   output$plot_cooking_donut_day <- renderPlot({
     
-    curr_time <- Sys.time()
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -910,7 +992,7 @@ server <- function(input, output, session) {
   
   output$plot_ss_donut_day <- renderPlot({
     
-    curr_time <- Sys.time()
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -948,7 +1030,7 @@ server <- function(input, output, session) {
   
   output$plot_exercise_donut_day <- renderPlot({
     
-    curr_time <- Sys.time()
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -986,7 +1068,7 @@ server <- function(input, output, session) {
   
   output$plot_rr_donut_day <- renderPlot({
     
-    curr_time <- Sys.time()
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1020,11 +1102,11 @@ server <- function(input, output, session) {
   })
   
   
-  ## Read/Watch Arts/Vids/News donuts
+  ## articles/essays/videos/news donuts
   
   output$plot_arts_donut_day <- renderPlot({
     
-    curr_time <- Sys.time()
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1037,7 +1119,7 @@ server <- function(input, output, session) {
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
-               project = "read/watch-arts/vids/news", 
+               project = "articles/essays/videos/news", 
                date_ = date_adj) 
   })
   
@@ -1045,7 +1127,7 @@ server <- function(input, output, session) {
     plot_donut(time_pd = "week", 
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
-               project = "read/watch-arts/vids/news", 
+               project = "articles/essays/videos/news", 
                date_ = lubridate::floor_date(Sys.Date(), "week", 1)) 
   })
   
@@ -1053,7 +1135,7 @@ server <- function(input, output, session) {
     plot_donut(time_pd = "month", 
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
-               project = "read/watch-arts/vids/news", 
+               project = "articles/essays/videos/news", 
                date_ = lubridate::floor_date(Sys.Date(), "month", 1)) 
   })
   
@@ -1062,7 +1144,7 @@ server <- function(input, output, session) {
   
   output$plot_resp_donut_day <- renderPlot({
     
-    curr_time <- Sys.time()
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1100,7 +1182,7 @@ server <- function(input, output, session) {
   
   output$plot_journal_donut_day <- renderPlot({
     
-    curr_time <- Sys.time()
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1204,14 +1286,111 @@ server <- function(input, output, session) {
   # })
   
   
-  ## Reports Page ----------------------------
+  ## Calendars Page ----------------------------
   
-  output$top_tasks_bl <- DT::renderDataTable(
-    get_top_tasks(project = "BlueLabs", start_date = input$bl_tasks_start, end_date = input$bl_tasks_end),
-    options = list(pageLength = 10, lengthChange = FALSE, dom = "t", filter = list(position = "top")),
-    rownames = FALSE,
-    colnames = c("", "mins", "hrs")
-  )
+  output$bl_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$bl_cal_dates[1],
+                  end_date = input$bl_cal_dates[2],
+                  project = "BlueLabs",
+                  totals_df = daily_totals(),
+                  goals_df = daily_goals())
+  })
+  
+  output$org_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$org_cal_dates[1],
+                  end_date = input$org_cal_dates[2],
+                  project = "organize/build-skills",
+                  totals_df = daily_totals(),
+                  goals_df = daily_goals())
+  })
+  
+  output$books_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$org_cal_dates[1],
+                  end_date = input$org_cal_dates[2],
+                  project = "read-books",
+                  totals_df = daily_totals(),
+                  goals_df = daily_goals())
+  })
+  
+  output$chores_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$org_cal_dates[1],
+                  end_date = input$org_cal_dates[2],
+                  project = "responsibilities/chores",
+                  totals_df = daily_totals(),
+                  goals_df = daily_goals())
+  })
+  
+  output$skill_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$org_cal_dates[1],
+                  end_date = input$org_cal_dates[2],
+                  project = "learn-skill",
+                  totals_df = daily_totals(),
+                  goals_df = daily_goals())
+  })
+  
+  output$cook_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$org_cal_dates[1],
+                  end_date = input$org_cal_dates[2],
+                  project = "organize/build-skills",
+                  totals_df = daily_totals(),
+                  goals_df = daily_goals())
+  })
+  
+  output$read_watch_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$org_cal_dates[1],
+                  end_date = input$org_cal_dates[2],
+                  project = "articles/essays/videos/news",
+                  totals_df = daily_totals(),
+                  goals_df = daily_goals())
+  })
+  
+  output$research_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$research_cal_dates[1],
+                  end_date = input$research_cal_dates[2],
+                  project = "review/research",
+                  totals_df = daily_totals(),
+                  goals_df = daily_goals())
+  })
+  
+  output$journal_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$journal_cal_dates[1],
+                  end_date = input$journal_cal_dates[2],
+                  project = "journal/plan",
+                  totals_df = daily_totals(),
+                  goals_df = daily_goals())
+  })
+  
+  output$ss_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$ss_cal_dates[1],
+                  end_date = input$ss_cal_dates[2],
+                  project = "stretch & strength",
+                  totals_df = daily_totals(),
+                  goals_df = daily_goals())
+  })
+  
+  output$exercise_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$exercise_cal_dates[1],
+                  end_date = input$exercise_cal_dates[2],
+                  project = "exercise",
+                  totals_df = daily_totals(),
+                  goals_df = daily_goals())
+  })
+  
+  output$proj_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$proj_cal_dates[1],
+                  end_date = input$proj_cal_dates[2],
+                  project = "pers-project",
+                  totals_df = daily_totals(),
+                  goals_df = daily_goals())
+  })
+  
+  
+  
+  ## Tasks Page ----------------------------
+  
+  
+  ## Trends Page ----------------------------
+  
   
 }
 
