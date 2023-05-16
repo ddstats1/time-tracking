@@ -324,7 +324,7 @@ make_calendar_box <- function(project, id) {
   box(
     title = str_to_title(project),
     id = id,
-    width = 12,
+    width = 11,
     
     dateRangeInput(str_c(id, "_cal_dates"), "", 
                    # default range: last month and this month
