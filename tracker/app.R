@@ -252,12 +252,13 @@ plot_calendar <- function(start_date, end_date, project, totals_df, goals_df) {
            # if missing, make 0
            mins_complete = ifelse(is.na(mins_complete), 0, mins_complete),
            mins_goal = ifelse(is.na(mins_goal), 0, mins_goal),
-           did_complete = case_when(mins_goal == 0 ~ NA_character_,
+           did_complete = case_when(date > Sys.Date() ~ NA_character_,
+                                    mins_goal == 0 ~ NA_character_,
                                     mins_complete >= mins_goal ~ "1",
                                     mins_complete < mins_goal ~ "0")) %>% 
     pull(did_complete)
   
-  # make today NA if it's currently 0
+  # make today NA if it's currently "0" (so if complete, keep at "1")
   if (!is.na(vec_completed[length(vec_completed)])) {
     
     vec_completed[length(vec_completed)] <- NA
@@ -325,7 +326,7 @@ make_calendar_box <- function(project, id) {
     dateRangeInput(str_c(id, "_cal_dates"), "", 
                    # default range: last month and this month
                    start = str_c(year(Sys.Date()), "-", "0", month(Sys.Date()) - 1, "-01"),
-                   end = Sys.Date()),
+                   end = lubridate::ceiling_date(Sys.Date(), "month") - lubridate::days(1)),
     
     plotOutput(str_c(id, "_cal_plot"))
   ) 
