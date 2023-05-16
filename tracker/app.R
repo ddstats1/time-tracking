@@ -614,14 +614,47 @@ ui <- dashboardPage(
       tabItem(
         tabName = "calendars",
         
-        # two boxes in first row
+        # FIRST ROW
         
         splitLayout(
-          cellWidths = c("33.33%", "33.33%"),
+          cellWidths = c("33.33%", "33.33%", "33.33%"),
           
           fluidRow(make_calendar_box(project = "BlueLabs", id = "bl")),
           fluidRow(make_calendar_box(project = "organize/build-skills", id = "org")),
           fluidRow(make_calendar_box(project = "read-books", id = "books"))
+        ),
+        
+        
+        # SECOND ROW
+        
+        splitLayout(
+          cellWidths = c("33.33%", "33.33%", "33.33%"),
+          
+          fluidRow(make_calendar_box(project = "chores/responsibilities", id = "chores")),
+          fluidRow(make_calendar_box(project = "learn-skill", id = "skill")),
+          fluidRow(make_calendar_box(project = "cooking", id = "cooking"))
+        ),
+        
+        
+        # THIRD ROW
+        
+        splitLayout(
+          cellWidths = c("33.33%", "33.33%", "33.33%"),
+          
+          fluidRow(make_calendar_box(project = "articles/essays/videos/news", id = "arts")),
+          fluidRow(make_calendar_box(project = "review/research", id = "research")),
+          fluidRow(make_calendar_box(project = "journal/plan", id = "journal"))
+        ),
+        
+        
+        # FOURTH ROW
+        
+        splitLayout(
+          cellWidths = c("33.33%", "33.33%", "33.33%"),
+          
+          fluidRow(make_calendar_box(project = "stretch & strength", id = "ss")),
+          fluidRow(make_calendar_box(project = "exercise", id = "exercise")),
+          fluidRow(make_calendar_box(project = "pers-project", id = "proj"))
         )
       ),
       
@@ -1310,40 +1343,40 @@ server <- function(input, output, session) {
   })
   
   output$books_cal_plot <- renderPlot({
-    plot_calendar(start_date = input$org_cal_dates[1],
-                  end_date = input$org_cal_dates[2],
+    plot_calendar(start_date = input$books_cal_dates[1],
+                  end_date = input$books_cal_dates[2],
                   project = "read-books",
                   totals_df = daily_totals(),
                   goals_df = daily_goals())
   })
   
   output$chores_cal_plot <- renderPlot({
-    plot_calendar(start_date = input$org_cal_dates[1],
-                  end_date = input$org_cal_dates[2],
+    plot_calendar(start_date = input$chores_cal_dates[1],
+                  end_date = input$chores_cal_dates[2],
                   project = "responsibilities/chores",
                   totals_df = daily_totals(),
                   goals_df = daily_goals())
   })
   
   output$skill_cal_plot <- renderPlot({
-    plot_calendar(start_date = input$org_cal_dates[1],
-                  end_date = input$org_cal_dates[2],
+    plot_calendar(start_date = input$skill_cal_dates[1],
+                  end_date = input$skill_cal_dates[2],
                   project = "learn-skill",
                   totals_df = daily_totals(),
                   goals_df = daily_goals())
   })
   
-  output$cook_cal_plot <- renderPlot({
-    plot_calendar(start_date = input$org_cal_dates[1],
-                  end_date = input$org_cal_dates[2],
-                  project = "organize/build-skills",
+  output$cooking_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$cooking_cal_dates[1],
+                  end_date = input$cooking_cal_dates[2],
+                  project = "cooking/baking",
                   totals_df = daily_totals(),
                   goals_df = daily_goals())
   })
   
-  output$read_watch_cal_plot <- renderPlot({
-    plot_calendar(start_date = input$org_cal_dates[1],
-                  end_date = input$org_cal_dates[2],
+  output$arts_cal_plot <- renderPlot({
+    plot_calendar(start_date = input$arts_cal_dates[1],
+                  end_date = input$arts_cal_dates[2],
                   project = "articles/essays/videos/news",
                   totals_df = daily_totals(),
                   goals_df = daily_goals())
