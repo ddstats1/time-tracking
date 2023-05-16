@@ -79,7 +79,7 @@ library(janitor)
 
 ## Functions ----------------------------
 
-plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, goals_df, project, date_) {
+plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, goals_df, project, date_, is_today_page = FALSE) {
   
   # TODO: make join_by column (day, week, or month) a variable based on time_pd, 
   # just have one "totals <-" pipe
@@ -99,8 +99,16 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, g
              pct_complete = ifelse(is.na(pct_complete), 0, pct_complete)) %>% 
       select(date, project_name, mins_complete, mins_goal, pct_complete, n_days_goal_entered)
     
-    plot_title <- "Today"
-    plot_caption <- str_c(round(totals$mins_complete, 0), " / ", totals$mins_goal, "m")
+    # for donut page
+    if (is_today_page == FALSE) {
+      plot_title <- "Today"
+      plot_caption <- str_c(round(totals$mins_complete, 0), " / ", totals$mins_goal, "m")
+      # for today page
+    } else {
+      plot_title <- str_to_title(project)
+      plot_caption <- str_c(round(totals$mins_complete, 0), " / ", totals$mins_goal, "m")
+    }
+    
     
     
   } else if (time_pd == "week") {
@@ -289,7 +297,9 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Donut", tabName = "donut"),
       menuItem("Today", tabName = "today"),
-      menuItem("Reports", tabName = "reports")
+      menuItem("Calendars", tabName = "calendars"),
+      menuItem("Tasks", tabName = "tasks"),
+      menuItem("Trends", tabName = "trends")
     )
   ),
   dashboardBody(
@@ -456,29 +466,99 @@ ui <- dashboardPage(
       
       ## Today Page ----------------------------------
       
-      # should only include tasks that have a goal for this day
-      
       tabItem(tabName = "today",
               
-              fluidRow(
-                tableOutput("entries_table")
-              )
+              # 
+              # fluidRow(
+              #   
+              #   # two boxes in first row
+              #   splitLayout(
+              #     cellWidths = c("50%", "50%"),
+              #     
+              #     box(
+              #       title = "", 
+              #       id = "zzz_today", 
+              #       width = 12,
+              #       
+              #       splitLayout(
+              #         #cellWidths = c("10%", "10%", "10%", "10%", "10%", 
+              #         #               "10%", "10%", "10%", "10%", "10%"),
+              #         
+              #         cellWidths = c("25%", "25%", "25%", "25%"),
+              #         
+              #         #cellWidths = c("33.33%", "33.33%"),
+              #         
+              #         plotOutput("plot_bl_today", height = "175px", width = "132px"),
+              #         plotOutput("plot_organize_today", height = "175px", width = "132px"),
+              #         plotOutput("plot_book_today", height = "175px", width = "132px"),
+              #         plotOutput("plot_chores_today", height = "175px", width = "132px"),
+              #         #plotOutput("plot_chores_today", height = "175px", width = "132px")
+              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+              #         #plotOutput("plot_chores_today", height = "175px", width = "132px")
+              #       )
+              #     ),
+              #     
+              #     box(
+              #       title = "", 
+              #       id = "zzz_today", 
+              #       width = 12,
+              #       
+              #       splitLayout(
+              #         #cellWidths = c("10%", "10%", "10%", "10%", "10%", 
+              #         #               "10%", "10%", "10%", "10%", "10%"),
+              #         
+              #         cellWidths = c("25%", "25%", "25%", "25%"),
+              #         
+              #         #cellWidths = c("33.33%", "33.33%"),
+              #         
+              #         plotOutput("plot_bl_today", height = "175px", width = "132px"),
+              #         plotOutput("plot_organize_today", height = "175px", width = "132px"),
+              #         plotOutput("plot_book_today", height = "175px", width = "132px"),
+              #         plotOutput("plot_chores_today", height = "175px", width = "132px"),
+              #         #plotOutput("plot_chores_today", height = "175px", width = "132px")
+              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+              #         #plotOutput("plot_chores_today", height = "175px", width = "132px")
+              #       )
+              #     )
+              #   )
+              # )
+              
       ),
       
       
-      ## Reports Page ----------------------------------
+      ## Calendars Page ----------------------------------
       
-      tabItem(tabName = "reports",
+      tabItem(
+        tabName = "calendars",
+        
+        
+        
+        
+        
+      ),
+      
+      ## Tasks Page ----------------------------------
+      
+      tabItem(tabName = "tasks",
               
-              fluidRow(
-                box(
-                  title = "BlueLabs", 
-                  id = "bl_input", 
-                  width = 12,
-                  column(width = 3, 
-                         dateInput("read-books", "Read Books"))
-                )
-              )
+              
+              
+              
+      ),
+      
+      ## Trends Page ----------------------------------
+      
+      tabItem(tabName = "trends",
+              
+              
+              
+              
       )
     )
   )
@@ -601,7 +681,7 @@ server <- function(input, output, session) {
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
     # plot from yesterday's date instead of Sys.Date()
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time()
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -640,7 +720,7 @@ server <- function(input, output, session) {
   
   output$plot_books_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time()
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -678,7 +758,7 @@ server <- function(input, output, session) {
   
   output$plot_organize_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time()
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -716,7 +796,7 @@ server <- function(input, output, session) {
   
   output$plot_proj_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time()
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -754,7 +834,7 @@ server <- function(input, output, session) {
   
   output$plot_skill_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time()
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -792,7 +872,7 @@ server <- function(input, output, session) {
   
   output$plot_cooking_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time()
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -830,7 +910,7 @@ server <- function(input, output, session) {
   
   output$plot_ss_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time()
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -868,7 +948,7 @@ server <- function(input, output, session) {
   
   output$plot_exercise_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time()
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -906,7 +986,7 @@ server <- function(input, output, session) {
   
   output$plot_rr_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time()
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -944,7 +1024,7 @@ server <- function(input, output, session) {
   
   output$plot_arts_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time()
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -982,7 +1062,7 @@ server <- function(input, output, session) {
   
   output$plot_resp_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time()
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1020,7 +1100,7 @@ server <- function(input, output, session) {
   
   output$plot_journal_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time()
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1056,6 +1136,72 @@ server <- function(input, output, session) {
   
   ## Today Page ----------------------------
   
+  # output$plot_bl_today <- renderPlot({
+  #   
+  #   # BlueLabs
+  #   if (curr_time %within% latenight_interval) {
+  #     date_adj <- Sys.Date() - days(1)
+  #   } else {
+  #     date_adj <- Sys.Date()
+  #   }
+  #   
+  #   plot_donut(time_pd = "day", 
+  #              totals_df = daily_totals(),
+  #              goals_df = daily_goals(),
+  #              project = "BlueLabs", 
+  #              date_ = date_adj,
+  #              is_today_page = TRUE) 
+  # })
+  # 
+  # 
+  # # Organize
+  # output$plot_organize_today <- renderPlot({
+  #   
+  #   if (curr_time %within% latenight_interval) {
+  #     date_adj <- Sys.Date() - days(1)
+  #   } else {
+  #     date_adj <- Sys.Date()
+  #   }
+  #   
+  #   plot_donut(time_pd = "day", 
+  #              totals_df = daily_totals(),
+  #              goals_df = daily_goals(),
+  #              project = "organize/build-skills", 
+  #              date_ = date_adj,
+  #              is_today_page = TRUE) 
+  # })
+  # 
+  # output$plot_book_today <- renderPlot({
+  #   
+  #   if (curr_time %within% latenight_interval) {
+  #     date_adj <- Sys.Date() - days(1)
+  #   } else {
+  #     date_adj <- Sys.Date()
+  #   }
+  #   
+  #   plot_donut(time_pd = "day", 
+  #              totals_df = daily_totals(),
+  #              goals_df = daily_goals(),
+  #              project = "read-books", 
+  #              date_ = date_adj,
+  #              is_today_page = TRUE) 
+  # })
+  # 
+  # output$plot_chores_today <- renderPlot({
+  #   
+  #   if (curr_time %within% latenight_interval) {
+  #     date_adj <- Sys.Date() - days(1)
+  #   } else {
+  #     date_adj <- Sys.Date()
+  #   }
+  #   
+  #   plot_donut(time_pd = "day", 
+  #              totals_df = daily_totals(),
+  #              goals_df = daily_goals(),
+  #              project = "responsibilities/chores", 
+  #              date_ = date_adj,
+  #              is_today_page = TRUE) 
+  # })
   
   
   ## Reports Page ----------------------------
