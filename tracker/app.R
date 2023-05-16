@@ -255,14 +255,17 @@ plot_calendar <- function(start_date, end_date, project, totals_df, goals_df) {
            did_complete = case_when(date > Sys.Date() ~ NA_character_,
                                     mins_goal == 0 ~ NA_character_,
                                     mins_complete >= mins_goal ~ "1",
+                                    # don't want today to be red if haven't completed
+                                    date == Sys.Date() & (mins_complete < mins_goal) ~ NA_character_
                                     mins_complete < mins_goal ~ "0")) %>% 
     pull(did_complete)
   
   # make today NA if it's currently "0" (so if complete, keep at "1")
-  if (!is.na(vec_completed[length(vec_completed)])) {
-    
-    vec_completed[length(vec_completed)] <- NA
-  }
+  
+  #if (!is.na(vec_completed[length(vec_completed)])) {
+  #  
+  #  vec_completed[length(vec_completed)] <- NA
+  #}
   
   # IF only NA and 0's (i.e. haven't completed a day for this project, which
   # is cool, i want new projects from time to time), 
