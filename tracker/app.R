@@ -300,7 +300,7 @@ plot_calendar <- function(start_date, end_date, project, totals_df, goals_df) {
   # 
   # days_met <- end_month_totals %>% filter(did_complete == "1") %>% nrow()
   # days_not_met <- end_month_totals %>% filter(did_complete == "0") %>% nrow()
-  
+  # 
   cal <- calendR(
     start_date = start_date,
     end_date = end_date,
@@ -401,8 +401,13 @@ ui <- dashboardPage(
       menuItem("Today", tabName = "today"),
       menuItem("Calendars", tabName = "calendars"),
       menuItem("Tasks", tabName = "tasks"),
-      menuItem("Trends", tabName = "trends")
+      menuItem("------------------", tabName = "--_1"),
+      menuItem("Books", tabName = "books"),
+      menuItem("Exercise", tabName = "exercise"),
+      menuItem("------------------", tabName = "--_2"),
+      menuItem("Reasons", tabName = "reasons")
     )
+    
   ),
   dashboardBody(
     
@@ -701,7 +706,34 @@ ui <- dashboardPage(
         tabName = "trends",
         
         
-      )       
+      ),
+      
+      
+      ## Trends/Totals Page ----------------------------------
+      
+      tabItem(
+        tabName = "books",
+        
+        
+      ),
+      
+      
+      ## Trends/Totals Page ----------------------------------
+      
+      tabItem(
+        tabName = "exercise",
+        
+        
+      ),
+      
+      
+      ## Trends/Totals Page ----------------------------------
+      
+      tabItem(
+        tabName = "reasons",
+        
+        
+      )
       
     ) # end of tab items
     
