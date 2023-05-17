@@ -279,27 +279,27 @@ plot_calendar <- function(start_date, end_date, project, totals_df, goals_df) {
   }
   
   # x / y days completed in latest month
-  end_month <- month(end_date)
-  end_year <- year(end_date)
-  
-  end_month_totals <- daily_goals_df %>% 
-    left_join(daily_totals_df, by = c("date", "project_name")) %>% 
-    filter(project_name == {{ project }},
-           month(date) == end_month,
-           year(date) == end_year) %>% 
-    mutate(mins_complete = secs / 60,
-           # if missing, make 0
-           mins_complete = ifelse(is.na(mins_complete), 0, mins_complete),
-           mins_goal = ifelse(is.na(mins_goal), 0, mins_goal),
-           did_complete = case_when(date > date(Sys.time() - hours(4)) ~ NA_character_,
-                                    mins_goal == 0 ~ NA_character_,
-                                    mins_complete >= mins_goal ~ "1",
-                                    # don't want today to be red if haven't completed
-                                    date == date(Sys.time() - hours(4)) & (mins_complete < mins_goal) ~ NA_character_,
-                                    mins_complete < mins_goal ~ "0"))
-  
-  days_met <- end_month_totals %>% filter(did_complete == "1") %>% nrow()
-  days_not_met <- end_month_totals %>% filter(did_complete == "0") %>% nrow()
+  # end_month <- month(end_date)
+  # end_year <- year(end_date)
+  # 
+  # end_month_totals <- daily_goals_df %>% 
+  #   left_join(daily_totals_df, by = c("date", "project_name")) %>% 
+  #   filter(project_name == {{ project }},
+  #          month(date) == end_month,
+  #          year(date) == end_year) %>% 
+  #   mutate(mins_complete = secs / 60,
+  #          # if missing, make 0
+  #          mins_complete = ifelse(is.na(mins_complete), 0, mins_complete),
+  #          mins_goal = ifelse(is.na(mins_goal), 0, mins_goal),
+  #          did_complete = case_when(date > date(Sys.time() - hours(4)) ~ NA_character_,
+  #                                   mins_goal == 0 ~ NA_character_,
+  #                                   mins_complete >= mins_goal ~ "1",
+  #                                   # don't want today to be red if haven't completed
+  #                                   date == date(Sys.time() - hours(4)) & (mins_complete < mins_goal) ~ NA_character_,
+  #                                   mins_complete < mins_goal ~ "0"))
+  # 
+  # days_met <- end_month_totals %>% filter(did_complete == "1") %>% nrow()
+  # days_not_met <- end_month_totals %>% filter(did_complete == "0") %>% nrow()
   
   cal <- calendR(
     start_date = start_date,
