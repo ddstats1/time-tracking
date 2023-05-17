@@ -812,7 +812,7 @@ server <- function(input, output, session) {
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
                                    ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
-    if (curr_time %within% latenight_interval) {
+    if (curr_time_est %within% latenight_interval) {
       date_adj <- date(curr_time_est) - days(1)
     } else {
       date_adj <- date(curr_time_est)
@@ -858,7 +858,7 @@ server <- function(input, output, session) {
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
                                    ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
-    if (curr_time %within% latenight_interval) {
+    if (curr_time_est %within% latenight_interval) {
       date_adj <- date(curr_time_est) - days(1)
     } else {
       date_adj <- date(curr_time_est)
@@ -903,7 +903,7 @@ server <- function(input, output, session) {
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
                                    ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
-    if (curr_time %within% latenight_interval) {
+    if (curr_time_est %within% latenight_interval) {
       date_adj <- date(curr_time_est) - days(1)
     } else {
       date_adj <- date(curr_time_est)
@@ -948,7 +948,7 @@ server <- function(input, output, session) {
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
                                    ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
-    if (curr_time %within% latenight_interval) {
+    if (curr_time_est %within% latenight_interval) {
       date_adj <- date(curr_time_est) - days(1)
     } else {
       date_adj <- date(curr_time_est)
@@ -993,7 +993,7 @@ server <- function(input, output, session) {
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
                                    ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
-    if (curr_time %within% latenight_interval) {
+    if (curr_time_est %within% latenight_interval) {
       date_adj <- date(curr_time_est) - days(1)
     } else {
       date_adj <- date(curr_time_est)
@@ -1038,7 +1038,7 @@ server <- function(input, output, session) {
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
                                    ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
-    if (curr_time %within% latenight_interval) {
+    if (curr_time_est %within% latenight_interval) {
       date_adj <- date(curr_time_est) - days(1)
     } else {
       date_adj <- date(curr_time_est)
@@ -1083,7 +1083,7 @@ server <- function(input, output, session) {
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
                                    ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
-    if (curr_time %within% latenight_interval) {
+    if (curr_time_est %within% latenight_interval) {
       date_adj <- date(curr_time_est) - days(1)
     } else {
       date_adj <- date(curr_time_est)
@@ -1128,7 +1128,7 @@ server <- function(input, output, session) {
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
                                    ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
-    if (curr_time %within% latenight_interval) {
+    if (curr_time_est %within% latenight_interval) {
       date_adj <- date(curr_time_est) - days(1)
     } else {
       date_adj <- date(curr_time_est)
@@ -1173,7 +1173,7 @@ server <- function(input, output, session) {
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
                                    ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
-    if (curr_time %within% latenight_interval) {
+    if (curr_time_est %within% latenight_interval) {
       date_adj <- date(curr_time_est) - days(1)
     } else {
       date_adj <- date(curr_time_est)
@@ -1218,7 +1218,7 @@ server <- function(input, output, session) {
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
                                    ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
-    if (curr_time %within% latenight_interval) {
+    if (curr_time_est %within% latenight_interval) {
       date_adj <- date(curr_time_est) - days(1)
     } else {
       date_adj <- date(curr_time_est)
@@ -1263,7 +1263,7 @@ server <- function(input, output, session) {
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
                                    ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
-    if (curr_time %within% latenight_interval) {
+    if (curr_time_est %within% latenight_interval) {
       date_adj <- date(curr_time_est) - days(1)
     } else {
       date_adj <- date(curr_time_est)
@@ -1308,9 +1308,9 @@ server <- function(input, output, session) {
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
                                    ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
-    if (curr_time %within% latenight_interval) {
+    if (curr_time_est %within% latenight_interval) {
       date_adj <- date(curr_time_est) - days(1)
-    } else {
+    } else { 
       date_adj <- date(curr_time_est)
     }
     
@@ -1343,7 +1343,7 @@ server <- function(input, output, session) {
   # output$plot_bl_today <- renderPlot({
   #   
   #   # BlueLabs
-  #   if (curr_time %within% latenight_interval) {
+  #   if (curr_time_est %within% latenight_interval) {
   #     date_adj <- Sys.Date() - days(1)
   #   } else {
   #     date_adj <- Sys.Date()
@@ -1361,7 +1361,7 @@ server <- function(input, output, session) {
   # # Organize
   # output$plot_organize_today <- renderPlot({
   #   
-  #   if (curr_time %within% latenight_interval) {
+  #   if (curr_time_est %within% latenight_interval) {
   #     date_adj <- Sys.Date() - days(1)
   #   } else {
   #     date_adj <- Sys.Date()
@@ -1377,7 +1377,7 @@ server <- function(input, output, session) {
   # 
   # output$plot_book_today <- renderPlot({
   #   
-  #   if (curr_time %within% latenight_interval) {
+  #   if (curr_time_est %within% latenight_interval) {
   #     date_adj <- Sys.Date() - days(1)
   #   } else {
   #     date_adj <- Sys.Date()
@@ -1393,7 +1393,7 @@ server <- function(input, output, session) {
   # 
   # output$plot_chores_today <- renderPlot({
   #   
-  #   if (curr_time %within% latenight_interval) {
+  #   if (curr_time_est %within% latenight_interval) {
   #     date_adj <- Sys.Date() - days(1)
   #   } else {
   #     date_adj <- Sys.Date()
