@@ -102,11 +102,13 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, g
     
     # for donut page
     if (is_today_page == FALSE) {
-      plot_title <- "Today"
+      #plot_title <- "Today"
+      plot_title <- date_
       plot_caption <- str_c(round(totals$mins_complete, 0), " / ", totals$mins_goal, "m")
       # for today page
     } else {
-      plot_title <- str_to_title(project)
+      #plot_title <- str_to_title(project)
+      plot_title <- date_
       plot_caption <- str_c(round(totals$mins_complete, 0), " / ", totals$mins_goal, "m")
     }
     
