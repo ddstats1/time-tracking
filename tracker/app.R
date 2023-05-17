@@ -102,13 +102,11 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, g
     
     # for donut page
     if (is_today_page == FALSE) {
-      #plot_title <- "Today"
-      plot_title <- date_
+      plot_title <- "Today"
       plot_caption <- str_c(round(totals$mins_complete, 0), " / ", totals$mins_goal, "m")
       # for today page
     } else {
-      #plot_title <- str_to_title(project)
-      plot_title <- date_
+      plot_title <- str_to_title(project)
       plot_caption <- str_c(round(totals$mins_complete, 0), " / ", totals$mins_goal, "m")
     }
     
@@ -207,7 +205,7 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, g
            # 25/90m label at bottom of chart
            caption = plot_caption) +
       theme_void() +
-      theme(plot.title = element_text(hjust = 0.5, vjust = -2.25, size = 8),
+      theme(plot.title = element_text(hjust = 0.5, vjust = -2.25, size = 16),
             plot.caption = element_text(hjust = 0.5, vjust = 20, size = 8.2, color = "grey2"))
     
   }
@@ -280,12 +278,36 @@ plot_calendar <- function(start_date, end_date, project, totals_df, goals_df) {
     
   }
   
+  # x / y days completed in latest month
+  end_month <- month(end_date)
+  end_year <- year(end_date)
+  
+  end_month_totals <- daily_goals_df %>% 
+    left_join(daily_totals_df, by = c("date", "project_name")) %>% 
+    filter(project_name == {{ project }},
+           month(date) == end_month,
+           year(date) == end_year) %>% 
+    mutate(mins_complete = secs / 60,
+           # if missing, make 0
+           mins_complete = ifelse(is.na(mins_complete), 0, mins_complete),
+           mins_goal = ifelse(is.na(mins_goal), 0, mins_goal),
+           did_complete = case_when(date > date(Sys.time() - hours(4)) ~ NA_character_,
+                                    mins_goal == 0 ~ NA_character_,
+                                    mins_complete >= mins_goal ~ "1",
+                                    # don't want today to be red if haven't completed
+                                    date == date(Sys.time() - hours(4)) & (mins_complete < mins_goal) ~ NA_character_,
+                                    mins_complete < mins_goal ~ "0"))
+  
+  days_met <- end_month_totals %>% filter(did_complete == "1") %>% nrow()
+  days_not_met <- end_month_totals %>% filter(did_complete == "0") %>% nrow()
+  
   cal <- calendR(
     start_date = start_date,
     end_date = end_date,
     special.days = vec_completed,
-    special.col = 2:3,
-    title = ""
+    special.col = 2:3#,
+    #title = str_c(month.name[end_month], ":  ", days_met, "/", days_met + days_not_met),
+    #title.size = 12
   )
   
   return(cal)
