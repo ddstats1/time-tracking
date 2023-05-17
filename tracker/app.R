@@ -400,143 +400,144 @@ ui <- dashboardPage(
       
       ## Donut Page ----------------------------------
       
-      tabItem(tabName = "donut",
-              
-              # FIRST ROW
-              
-              splitLayout(
-                # 3 boxes in the first row
-                cellWidths = c("33.33%", "33.33%", "33.33%"),
-                
-                # BlueLabs donuts
-                fluidRow(
-                  make_donuts_box(box_title = "BlueLabs", 
-                                  icon = icon("galactic-republic"),
-                                  box_id = "bl_donuts",
-                                  plot_id = "bl")
-                ),
-                
-                # Organize/Build Skills donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Organize/Build Skills", 
-                                  icon = icon("seedling"),
-                                  box_id = "organize_donuts",
-                                  plot_id = "organize")
-                ),
-                
-                # Read Books donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Read Books",
-                                  icon = icon("book"),
-                                  box_id = "books_donut",
-                                  plot_id = "books")
-                )
-              ),
-              
-              
-              # SECOND ROW
-              
-              splitLayout(
-                # 3 boxes in the first row
-                cellWidths = c("33.33%", "33.33%", "33.33%"),
-                
-                # Chores/Responsibilities donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Chores/Responsibilities",
-                                  icon = icon("broom-wide"),
-                                  box_id = "resp_donut",
-                                  plot_id = "resp")
-                ),
-                
-                
-                # Learn Skill donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Learn Skill",
-                                  icon = icon("guitar"),
-                                  box_id = "skill_donut",
-                                  plot_id = "skill")
-                ),
-                
-                
-                # Cooking/Baking donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Cooking/Baking",
-                                  icon = icon("burger"),
-                                  box_id = "cooking_donut",
-                                  plot_id = "cooking")
-                )
-                
-              ),
-              
-              
-              # THIRD ROW
-              
-              splitLayout(
-                # 3 boxes in the first row
-                cellWidths = c("33.33%", "33.33%", "33.33%"),
-                
-                
-                # articles/essays/videos/news
-                fluidRow(
-                  make_donuts_box(box_title = "articles/essays/videos/news",
-                                  icon = icon("newspaper"),
-                                  box_id = "arts_donut",
-                                  plot_id = "arts")
-                ),
-                
-                
-                # Review/Research donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Review/Research",
-                                  icon = icon("book"),
-                                  box_id = "rr_donut",
-                                  plot_id = "rr")
-                ),
-                
-                
-                # Journal/Plan donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Journal/Plan",
-                                  icon = icon("notebook"),
-                                  box_id = "journal_donut",
-                                  plot_id = "journal")
-                )
-                
-              ),
-              
-              
-              # FOURTH ROW OF BOXES (3 total)
-              
-              splitLayout(
-                # 3 boxes in the first row
-                cellWidths = c("33.33%", "33.33%", "33.33%"),
-                
-                
-                # Stretch & Strength donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Stretch & Strength",
-                                  icon = icon("dumbbell"),
-                                  box_id = "ss_donut",
-                                  plot_id = "ss")
-                ),
-                
-                # Exercise donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Exercise",
-                                  icon = icon("person-running"),
-                                  box_id = "exercise_donut",
-                                  plot_id = "exercise")
-                ),
-                
-                # Personal Project donuts
-                fluidRow(
-                  make_donuts_box(box_title = "Personal Projects",
-                                  icon = icon("checklist"),
-                                  box_id = "proj_donut",
-                                  plot_id = "proj")
-                )
-                
-              )
+      tabItem(
+        tabName = "donut",
+        
+        # FIRST ROW
+        
+        splitLayout(
+          # 3 boxes in the first row
+          cellWidths = c("33.33%", "33.33%", "33.33%"),
+          
+          # BlueLabs donuts
+          fluidRow(
+            make_donuts_box(box_title = "BlueLabs", 
+                            icon = icon("galactic-republic"),
+                            box_id = "bl_donuts",
+                            plot_id = "bl")
+          ),
+          
+          # Organize/Build Skills donuts
+          fluidRow(
+            make_donuts_box(box_title = "Organize/Build Skills", 
+                            icon = icon("seedling"),
+                            box_id = "organize_donuts",
+                            plot_id = "organize")
+          ),
+          
+          # Read Books donuts
+          fluidRow(
+            make_donuts_box(box_title = "Read Books",
+                            icon = icon("book"),
+                            box_id = "books_donut",
+                            plot_id = "books")
+          )
+        ),
+        
+        
+        # SECOND ROW
+        
+        splitLayout(
+          # 3 boxes in the first row
+          cellWidths = c("33.33%", "33.33%", "33.33%"),
+          
+          # Chores/Responsibilities donuts
+          fluidRow(
+            make_donuts_box(box_title = "Chores/Responsibilities",
+                            icon = icon("broom-wide"),
+                            box_id = "resp_donut",
+                            plot_id = "resp")
+          ),
+          
+          
+          # Learn Skill donuts
+          fluidRow(
+            make_donuts_box(box_title = "Learn Skill",
+                            icon = icon("guitar"),
+                            box_id = "skill_donut",
+                            plot_id = "skill")
+          ),
+          
+          
+          # Cooking/Baking donuts
+          fluidRow(
+            make_donuts_box(box_title = "Cooking/Baking",
+                            icon = icon("burger"),
+                            box_id = "cooking_donut",
+                            plot_id = "cooking")
+          )
+          
+        ),
+        
+        
+        # THIRD ROW
+        
+        splitLayout(
+          # 3 boxes in the first row
+          cellWidths = c("33.33%", "33.33%", "33.33%"),
+          
+          
+          # articles/essays/videos/news
+          fluidRow(
+            make_donuts_box(box_title = "articles/essays/videos/news",
+                            icon = icon("newspaper"),
+                            box_id = "arts_donut",
+                            plot_id = "arts")
+          ),
+          
+          
+          # Review/Research donuts
+          fluidRow(
+            make_donuts_box(box_title = "Review/Research",
+                            icon = icon("book"),
+                            box_id = "rr_donut",
+                            plot_id = "rr")
+          ),
+          
+          
+          # Journal/Plan donuts
+          fluidRow(
+            make_donuts_box(box_title = "Journal/Plan",
+                            icon = icon("notebook"),
+                            box_id = "journal_donut",
+                            plot_id = "journal")
+          )
+          
+        ),
+        
+        
+        # FOURTH ROW OF BOXES (3 total)
+        
+        splitLayout(
+          # 3 boxes in the first row
+          cellWidths = c("33.33%", "33.33%", "33.33%"),
+          
+          
+          # Stretch & Strength donuts
+          fluidRow(
+            make_donuts_box(box_title = "Stretch & Strength",
+                            icon = icon("dumbbell"),
+                            box_id = "ss_donut",
+                            plot_id = "ss")
+          ),
+          
+          # Exercise donuts
+          fluidRow(
+            make_donuts_box(box_title = "Exercise",
+                            icon = icon("person-running"),
+                            box_id = "exercise_donut",
+                            plot_id = "exercise")
+          ),
+          
+          # Personal Project donuts
+          fluidRow(
+            make_donuts_box(box_title = "Personal Projects",
+                            icon = icon("checklist"),
+                            box_id = "proj_donut",
+                            plot_id = "proj")
+          )
+          
+        )
               
               
       ), # end of donut page
@@ -544,68 +545,69 @@ ui <- dashboardPage(
       
       ## Today Page ----------------------------------
       
-      tabItem(tabName = "today",
-              
-              # 
-              # fluidRow(
-              #   
-              #   # two boxes in first row
-              #   splitLayout(
-              #     cellWidths = c("50%", "50%"),
-              #     
-              #     box(
-              #       title = "", 
-              #       id = "zzz_today", 
-              #       width = 12,
-              #       
-              #       splitLayout(
-              #         #cellWidths = c("10%", "10%", "10%", "10%", "10%", 
-              #         #               "10%", "10%", "10%", "10%", "10%"),
-              #         
-              #         cellWidths = c("25%", "25%", "25%", "25%"),
-              #         
-              #         #cellWidths = c("33.33%", "33.33%"),
-              #         
-              #         plotOutput("plot_bl_today", height = "175px", width = "132px"),
-              #         plotOutput("plot_organize_today", height = "175px", width = "132px"),
-              #         plotOutput("plot_book_today", height = "175px", width = "132px"),
-              #         plotOutput("plot_chores_today", height = "175px", width = "132px"),
-              #         #plotOutput("plot_chores_today", height = "175px", width = "132px")
-              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
-              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
-              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
-              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
-              #         #plotOutput("plot_chores_today", height = "175px", width = "132px")
-              #       )
-              #     ),
-              #     
-              #     box(
-              #       title = "", 
-              #       id = "zzz_today", 
-              #       width = 12,
-              #       
-              #       splitLayout(
-              #         #cellWidths = c("10%", "10%", "10%", "10%", "10%", 
-              #         #               "10%", "10%", "10%", "10%", "10%"),
-              #         
-              #         cellWidths = c("25%", "25%", "25%", "25%"),
-              #         
-              #         #cellWidths = c("33.33%", "33.33%"),
-              #         
-              #         plotOutput("plot_bl_today", height = "175px", width = "132px"),
-              #         plotOutput("plot_organize_today", height = "175px", width = "132px"),
-              #         plotOutput("plot_book_today", height = "175px", width = "132px"),
-              #         plotOutput("plot_chores_today", height = "175px", width = "132px"),
-              #         #plotOutput("plot_chores_today", height = "175px", width = "132px")
-              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
-              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
-              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
-              #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
-              #         #plotOutput("plot_chores_today", height = "175px", width = "132px")
-              #       )
-              #     )
-              #   )
-              # )
+      tabItem(
+        tabName = "today",
+        
+        # 
+        # fluidRow(
+        #   
+        #   # two boxes in first row
+        #   splitLayout(
+        #     cellWidths = c("50%", "50%"),
+        #     
+        #     box(
+        #       title = "", 
+        #       id = "zzz_today", 
+        #       width = 12,
+        #       
+        #       splitLayout(
+        #         #cellWidths = c("10%", "10%", "10%", "10%", "10%", 
+        #         #               "10%", "10%", "10%", "10%", "10%"),
+        #         
+        #         cellWidths = c("25%", "25%", "25%", "25%"),
+        #         
+        #         #cellWidths = c("33.33%", "33.33%"),
+        #         
+        #         plotOutput("plot_bl_today", height = "175px", width = "132px"),
+        #         plotOutput("plot_organize_today", height = "175px", width = "132px"),
+        #         plotOutput("plot_book_today", height = "175px", width = "132px"),
+        #         plotOutput("plot_chores_today", height = "175px", width = "132px"),
+        #         #plotOutput("plot_chores_today", height = "175px", width = "132px")
+        #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+        #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+        #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+        #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+        #         #plotOutput("plot_chores_today", height = "175px", width = "132px")
+        #       )
+        #     ),
+        #     
+        #     box(
+        #       title = "", 
+        #       id = "zzz_today", 
+        #       width = 12,
+        #       
+        #       splitLayout(
+        #         #cellWidths = c("10%", "10%", "10%", "10%", "10%", 
+        #         #               "10%", "10%", "10%", "10%", "10%"),
+        #         
+        #         cellWidths = c("25%", "25%", "25%", "25%"),
+        #         
+        #         #cellWidths = c("33.33%", "33.33%"),
+        #         
+        #         plotOutput("plot_bl_today", height = "175px", width = "132px"),
+        #         plotOutput("plot_organize_today", height = "175px", width = "132px"),
+        #         plotOutput("plot_book_today", height = "175px", width = "132px"),
+        #         plotOutput("plot_chores_today", height = "175px", width = "132px"),
+        #         #plotOutput("plot_chores_today", height = "175px", width = "132px")
+        #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+        #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+        #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+        #         #plotOutput("plot_chores_today", height = "175px", width = "132px"),
+        #         #plotOutput("plot_chores_today", height = "175px", width = "132px")
+        #       )
+        #     )
+        #   )
+        # )
               
       ),
       
@@ -669,11 +671,11 @@ ui <- dashboardPage(
               
       ),
       
-      ## Trends Page ----------------------------------
+      ## Trends/Totals Page ----------------------------------
       
-      tabItem(tabName = "trends",
-              
-              
+      tabItem(
+        tabName = "trends",
+        
               
       )       
       
@@ -800,7 +802,7 @@ server <- function(input, output, session) {
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
     # plot from yesterday's date instead of Sys.Date()
     
-    curr_time <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    curr_time <- Sys.time() - hours(8) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
     # midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
@@ -841,7 +843,7 @@ server <- function(input, output, session) {
   
   output$plot_books_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time() - hours(8)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -879,7 +881,7 @@ server <- function(input, output, session) {
   
   output$plot_organize_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time() - hours(8)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -917,7 +919,7 @@ server <- function(input, output, session) {
   
   output$plot_proj_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time() - hours(8)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -955,7 +957,7 @@ server <- function(input, output, session) {
   
   output$plot_skill_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time() - hours(8)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -993,7 +995,7 @@ server <- function(input, output, session) {
   
   output$plot_cooking_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time() - hours(8)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1031,7 +1033,7 @@ server <- function(input, output, session) {
   
   output$plot_ss_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time() - hours(8)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1069,7 +1071,7 @@ server <- function(input, output, session) {
   
   output$plot_exercise_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time() - hours(8)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1107,7 +1109,7 @@ server <- function(input, output, session) {
   
   output$plot_rr_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time() - hours(8)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1145,7 +1147,7 @@ server <- function(input, output, session) {
   
   output$plot_arts_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time() - hours(8)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1183,7 +1185,7 @@ server <- function(input, output, session) {
   
   output$plot_resp_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time() - hours(8)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1221,7 +1223,7 @@ server <- function(input, output, session) {
   
   output$plot_journal_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
+    curr_time <- Sys.time() - hours(8)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
