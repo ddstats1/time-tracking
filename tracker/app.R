@@ -207,7 +207,7 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, g
            # 25/90m label at bottom of chart
            caption = plot_caption) +
       theme_void() +
-      theme(plot.title = element_text(hjust = 0.5, vjust = -2.25, size = 16),
+      theme(plot.title = element_text(hjust = 0.5, vjust = -2.25, size = 8),
             plot.caption = element_text(hjust = 0.5, vjust = 20, size = 8.2, color = "grey2"))
     
   }
@@ -727,8 +727,8 @@ server <- function(input, output, session) {
       # subtracting 4 hours gets the actual time EST...
       # then i'm taking away another 4 hours so that if i do something at 2 or 3am 
       # (up to 4am here, using minus 4 hours), it'll count for the previous day
-      mutate(start = start - lubridate::hours(8),
-             stop = stop - lubridate::hours(8),
+      mutate(start = start - lubridate::hours(12),
+             stop = stop - lubridate::hours(12),
              date = lubridate::date(start))
   })
   
@@ -845,7 +845,7 @@ server <- function(input, output, session) {
   
   output$plot_books_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(8)
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -883,7 +883,7 @@ server <- function(input, output, session) {
   
   output$plot_organize_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(8)
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -921,7 +921,7 @@ server <- function(input, output, session) {
   
   output$plot_proj_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(8)
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -959,7 +959,7 @@ server <- function(input, output, session) {
   
   output$plot_skill_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(8)
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -997,7 +997,7 @@ server <- function(input, output, session) {
   
   output$plot_cooking_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(8)
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1035,7 +1035,7 @@ server <- function(input, output, session) {
   
   output$plot_ss_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(8)
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1073,7 +1073,7 @@ server <- function(input, output, session) {
   
   output$plot_exercise_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(8)
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1111,7 +1111,7 @@ server <- function(input, output, session) {
   
   output$plot_rr_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(8)
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1149,7 +1149,7 @@ server <- function(input, output, session) {
   
   output$plot_arts_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(8)
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1187,7 +1187,7 @@ server <- function(input, output, session) {
   
   output$plot_resp_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(8)
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
@@ -1225,7 +1225,7 @@ server <- function(input, output, session) {
   
   output$plot_journal_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(8)
+    curr_time <- Sys.time() - hours(4)
     latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
                                    ymd_hm(str_c(Sys.Date(), " 04:00")))
     
