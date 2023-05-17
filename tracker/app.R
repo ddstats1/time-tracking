@@ -727,8 +727,8 @@ server <- function(input, output, session) {
       # subtracting 4 hours gets the actual time EST...
       # then i'm taking away another 4 hours so that if i do something at 2 or 3am 
       # (up to 4am here, using minus 4 hours), it'll count for the previous day
-      mutate(start = start - lubridate::hours(12),
-             stop = stop - lubridate::hours(12),
+      mutate(start = start - lubridate::hours(8),
+             stop = stop - lubridate::hours(8),
              date = lubridate::date(start))
   })
   
@@ -804,16 +804,18 @@ server <- function(input, output, session) {
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
     # plot from yesterday's date instead of Sys.Date()
     
-    curr_time <- Sys.time() - hours(8) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
-    # midnight and 4am
-    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
-                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    # THE ACTUAL CURRENT TIME, EST
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # between midnight and 4am
+    latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
+                                   ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
     if (curr_time %within% latenight_interval) {
-      date_adj <- Sys.Date() - days(1)
+      date_adj <- date(curr_time_est) - days(1)
     } else {
-      date_adj <- Sys.Date()
+      date_adj <- date(curr_time_est)
     }
     
     plot_donut(time_pd = "day", 
@@ -845,14 +847,21 @@ server <- function(input, output, session) {
   
   output$plot_books_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
-    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
-                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    # if current time is between 12:00:01 am and 4:00:00 am, then want to display
+    # plot from yesterday's date instead of Sys.Date()
+    
+    
+    # THE ACTUAL CURRENT TIME, EST
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # between midnight and 4am
+    latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
+                                   ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
     if (curr_time %within% latenight_interval) {
-      date_adj <- Sys.Date() - days(1)
+      date_adj <- date(curr_time_est) - days(1)
     } else {
-      date_adj <- Sys.Date()
+      date_adj <- date(curr_time_est)
     }
     
     plot_donut(time_pd = "day", 
@@ -883,14 +892,21 @@ server <- function(input, output, session) {
   
   output$plot_organize_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
-    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
-                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    # if current time is between 12:00:01 am and 4:00:00 am, then want to display
+    # plot from yesterday's date instead of Sys.Date()
+    
+    
+    # THE ACTUAL CURRENT TIME, EST
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # between midnight and 4am
+    latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
+                                   ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
     if (curr_time %within% latenight_interval) {
-      date_adj <- Sys.Date() - days(1)
+      date_adj <- date(curr_time_est) - days(1)
     } else {
-      date_adj <- Sys.Date()
+      date_adj <- date(curr_time_est)
     }
     
     plot_donut(time_pd = "day", 
@@ -921,14 +937,21 @@ server <- function(input, output, session) {
   
   output$plot_proj_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
-    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
-                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    # if current time is between 12:00:01 am and 4:00:00 am, then want to display
+    # plot from yesterday's date instead of Sys.Date()
+    
+    
+    # THE ACTUAL CURRENT TIME, EST
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # between midnight and 4am
+    latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
+                                   ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
     if (curr_time %within% latenight_interval) {
-      date_adj <- Sys.Date() - days(1)
+      date_adj <- date(curr_time_est) - days(1)
     } else {
-      date_adj <- Sys.Date()
+      date_adj <- date(curr_time_est)
     }
     
     plot_donut(time_pd = "day", 
@@ -959,14 +982,21 @@ server <- function(input, output, session) {
   
   output$plot_skill_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
-    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
-                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    # if current time is between 12:00:01 am and 4:00:00 am, then want to display
+    # plot from yesterday's date instead of Sys.Date()
+    
+    
+    # THE ACTUAL CURRENT TIME, EST
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # between midnight and 4am
+    latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
+                                   ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
     if (curr_time %within% latenight_interval) {
-      date_adj <- Sys.Date() - days(1)
+      date_adj <- date(curr_time_est) - days(1)
     } else {
-      date_adj <- Sys.Date()
+      date_adj <- date(curr_time_est)
     }
     
     plot_donut(time_pd = "day", 
@@ -997,14 +1027,21 @@ server <- function(input, output, session) {
   
   output$plot_cooking_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
-    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
-                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    # if current time is between 12:00:01 am and 4:00:00 am, then want to display
+    # plot from yesterday's date instead of Sys.Date()
+    
+    
+    # THE ACTUAL CURRENT TIME, EST
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # between midnight and 4am
+    latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
+                                   ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
     if (curr_time %within% latenight_interval) {
-      date_adj <- Sys.Date() - days(1)
+      date_adj <- date(curr_time_est) - days(1)
     } else {
-      date_adj <- Sys.Date()
+      date_adj <- date(curr_time_est)
     }
     
     plot_donut(time_pd = "day", 
@@ -1035,14 +1072,21 @@ server <- function(input, output, session) {
   
   output$plot_ss_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
-    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
-                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    # if current time is between 12:00:01 am and 4:00:00 am, then want to display
+    # plot from yesterday's date instead of Sys.Date()
+    
+    
+    # THE ACTUAL CURRENT TIME, EST
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # between midnight and 4am
+    latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
+                                   ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
     if (curr_time %within% latenight_interval) {
-      date_adj <- Sys.Date() - days(1)
+      date_adj <- date(curr_time_est) - days(1)
     } else {
-      date_adj <- Sys.Date()
+      date_adj <- date(curr_time_est)
     }
     
     plot_donut(time_pd = "day", 
@@ -1073,14 +1117,21 @@ server <- function(input, output, session) {
   
   output$plot_exercise_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
-    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
-                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    # if current time is between 12:00:01 am and 4:00:00 am, then want to display
+    # plot from yesterday's date instead of Sys.Date()
+    
+    
+    # THE ACTUAL CURRENT TIME, EST
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # between midnight and 4am
+    latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
+                                   ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
     if (curr_time %within% latenight_interval) {
-      date_adj <- Sys.Date() - days(1)
+      date_adj <- date(curr_time_est) - days(1)
     } else {
-      date_adj <- Sys.Date()
+      date_adj <- date(curr_time_est)
     }
     
     plot_donut(time_pd = "day", 
@@ -1111,14 +1162,21 @@ server <- function(input, output, session) {
   
   output$plot_rr_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
-    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
-                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    # if current time is between 12:00:01 am and 4:00:00 am, then want to display
+    # plot from yesterday's date instead of Sys.Date()
+    
+    
+    # THE ACTUAL CURRENT TIME, EST
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # between midnight and 4am
+    latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
+                                   ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
     if (curr_time %within% latenight_interval) {
-      date_adj <- Sys.Date() - days(1)
+      date_adj <- date(curr_time_est) - days(1)
     } else {
-      date_adj <- Sys.Date()
+      date_adj <- date(curr_time_est)
     }
     
     plot_donut(time_pd = "day", 
@@ -1149,14 +1207,21 @@ server <- function(input, output, session) {
   
   output$plot_arts_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
-    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
-                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    # if current time is between 12:00:01 am and 4:00:00 am, then want to display
+    # plot from yesterday's date instead of Sys.Date()
+    
+    
+    # THE ACTUAL CURRENT TIME, EST
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # between midnight and 4am
+    latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
+                                   ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
     if (curr_time %within% latenight_interval) {
-      date_adj <- Sys.Date() - days(1)
+      date_adj <- date(curr_time_est) - days(1)
     } else {
-      date_adj <- Sys.Date()
+      date_adj <- date(curr_time_est)
     }
     
     plot_donut(time_pd = "day", 
@@ -1187,14 +1252,21 @@ server <- function(input, output, session) {
   
   output$plot_resp_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
-    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
-                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    # if current time is between 12:00:01 am and 4:00:00 am, then want to display
+    # plot from yesterday's date instead of Sys.Date()
+    
+    
+    # THE ACTUAL CURRENT TIME, EST
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # between midnight and 4am
+    latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
+                                   ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
     if (curr_time %within% latenight_interval) {
-      date_adj <- Sys.Date() - days(1)
+      date_adj <- date(curr_time_est) - days(1)
     } else {
-      date_adj <- Sys.Date()
+      date_adj <- date(curr_time_est)
     }
     
     plot_donut(time_pd = "day", 
@@ -1225,14 +1297,21 @@ server <- function(input, output, session) {
   
   output$plot_journal_donut_day <- renderPlot({
     
-    curr_time <- Sys.time() - hours(4)
-    latenight_interval <- interval(ymd_hm(str_c(Sys.Date(), " 00:01")), 
-                                   ymd_hm(str_c(Sys.Date(), " 04:00")))
+    # if current time is between 12:00:01 am and 4:00:00 am, then want to display
+    # plot from yesterday's date instead of Sys.Date()
+    
+    
+    # THE ACTUAL CURRENT TIME, EST
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    
+    # between midnight and 4am
+    latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
+                                   ymd_hm(str_c(date(curr_time_est), " 04:00")))
     
     if (curr_time %within% latenight_interval) {
-      date_adj <- Sys.Date() - days(1)
+      date_adj <- date(curr_time_est) - days(1)
     } else {
-      date_adj <- Sys.Date()
+      date_adj <- date(curr_time_est)
     }
     
     plot_donut(time_pd = "day", 
