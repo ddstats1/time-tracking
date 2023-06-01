@@ -198,7 +198,9 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, g
       # % value in middle of donut (95% done)
       annotate("text", x = 1.2, y = 1, size = 6, color = plot_color,
                label = str_c(signif(totals$pct_complete[1], 2) * 100, "%")) +
-      xlim(1, 4) +
+      #annotate("text", x = 1.2, y = 2, size = 4, 
+      #         label = plot_caption) +
+      xlim(0.92, 4) +
       ylim(0, 1) +
       scale_fill_manual(values = c(plot_color, "grey")) +
       guides(fill = "none") +
@@ -207,7 +209,7 @@ plot_donut <- function(time_pd = c("day", "week", "month", "year"), totals_df, g
            caption = plot_caption) +
       theme_void() +
       theme(plot.title = element_text(hjust = 0.5, vjust = -2.25, size = 16),
-            plot.caption = element_text(hjust = 0.5, vjust = 20, size = 8.2, color = "grey2"))
+            plot.caption = element_text(hjust = 0.5, vjust = 25, size = 8.2, color = "grey2"))
     
   }
   
@@ -316,6 +318,57 @@ plot_calendar <- function(start_date, end_date, project, totals_df, goals_df) {
 }
 
 #plot_calendar(start_date = "2023-05-01", end_date = "2023-05-15", project = "BlueLabs")
+
+
+
+# green if ALL tasks for that day were completed, red otherwise
+
+plot_overall_calendar <- function(start_date, end_date, totals_df, goals_df) {
+  
+  vec_completed <- goals_df %>% 
+    left_join(totals_df, by = c("date", "project_name")) %>% 
+    filter(date >= start_date,
+           date <= end_date) %>% 
+    mutate(mins_complete = secs / 60,
+           # if missing, make 0
+           mins_complete = ifelse(is.na(mins_complete), 0, mins_complete),
+           mins_goal = ifelse(is.na(mins_goal), 0, mins_goal),
+           was_goal_set = ifelse(mins_goal == 0, 0, 1),
+           did_complete = case_when(date > date(Sys.time() - hours(4)) ~ NA,
+                                    mins_goal == 0 ~ NA,
+                                    mins_complete >= mins_goal ~ 1,
+                                    # don't want today to be red if haven't completed
+                                    date == date(Sys.time() - hours(4)) & (mins_complete < mins_goal) ~ NA,
+                                    mins_complete < mins_goal ~ 0)) %>% 
+    group_by(date) %>% 
+    summarise(compl_goals = sum(did_complete, na.rm = TRUE),
+              tot_goals = sum(was_goal_set, na.rm = TRUE)) %>% 
+    mutate(did_complete_all = case_when(date > date(Sys.time() - hours(4)) ~ NA_character_,
+                                        tot_goals == 0 ~ NA_character_,
+                                        compl_goals == tot_goals ~ "1",
+                                        date == date(Sys.time() - hours(4)) & compl_goals < tot_goals ~ NA_character_,
+                                        compl_goals < tot_goals ~ "0")) %>% 
+    pull(did_complete_all)
+  
+  if (length(unique(vec_completed)) < 3) {
+    
+    loc_to_change <- which(is.na(vec_completed), NA_character_)[1]
+    vec_completed[loc_to_change] <- "1"
+    
+  }
+  
+  cal <- calendR(
+    start_date = start_date,
+    end_date = end_date,
+    special.days = vec_completed,
+    special.col = 2:3#,
+    #title = str_c(month.name[end_month], ":  ", days_met, "/", days_met + days_not_met),
+    #title.size = 12
+  )
+  
+  return(cal)
+  
+}
 
 
 
@@ -434,7 +487,7 @@ ui <- dashboardPage(
   dashboardHeader(),
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Donut", tabName = "donut"),
+      menuItem("Overall", tabName = "overall"),
       menuItem("Today", tabName = "today"),
       menuItem("Calendars", tabName = "calendars"),
       menuItem("Tasks", tabName = "tasks"),
@@ -465,10 +518,10 @@ ui <- dashboardPage(
     
     tabItems(
       
-      ## Donut Page ----------------------------------
+      ## Overall Page ----------------------------------
       
       tabItem(
-        tabName = "donut",
+        tabName = "overall",
         
         # FIRST ROW
         
@@ -630,7 +683,26 @@ ui <- dashboardPage(
       tabItem(
         tabName = "calendars",
         
-        # FIRST ROW
+        # OVERALL CALENDAR FIRST
+        
+        fluidRow(
+          box(
+            width = 12,
+            
+            dateRangeInput("overall_cal_dates", "", 
+                           # default range: last month and 4 months ago
+                           start = str_c(year(date(Sys.time() - hours(4))), "-", "0", 
+                                         month(date(Sys.time() - hours(4))) - 3, 
+                                         "-01"),
+                           end = lubridate::ceiling_date(date(Sys.time() - hours(4)), "month") - lubridate::days(1)
+            ),
+            
+            plotOutput("overall_cal_plot")
+          )
+        ),
+        
+        
+        # FIRST ROW OF PROJECTS
         
         splitLayout(
           cellWidths = c("33.33%", "33.33%", "33.33%"),
@@ -841,7 +913,7 @@ server <- function(input, output, session) {
   
   
   
-  ## Donut Page plots ----------------------------
+  ## Overall Page plots ----------------------------
   
   
   ## BlueLabs donuts
@@ -1414,6 +1486,13 @@ server <- function(input, output, session) {
   
   
   ## Calendars Page ----------------------------
+  
+  output$overall_cal_plot <- renderPlot({
+    plot_overall_calendar(start_date = input$overall_cal_dates[1],
+                          end_date = input$overall_cal_dates[2],
+                          totals_df = daily_totals(),
+                          goals_df = daily_goals())
+  })
   
   output$bl_cal_plot <- renderPlot({
     plot_calendar(start_date = input$bl_cal_dates[1],
