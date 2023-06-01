@@ -430,7 +430,7 @@ make_donuts_box <- function(box_title, icon, box_id, plot_id) {
 
 make_calendar_box <- function(project, id) {
   box(
-    title = str_to_title(project),
+    title = h5(str_to_title(project), align = "center"),
     id = id,
     width = 11,
     
@@ -483,7 +483,8 @@ ui <- dashboardPage(
       menuItem("Overall", tabName = "overall"),
       menuItem("Today", tabName = "today"),
       menuItem("Calendars", tabName = "calendars"),
-      menuItem("Tasks", tabName = "tasks"),
+      menuItem("Trends", tabName = "calendars"),
+      #menuItem("Tasks", tabName = "tasks"),
       menuItem("------------------", tabName = "--_1"),
       menuItem("Books", tabName = "books"),
       menuItem("Skills", tabName = "skills"),
