@@ -840,9 +840,9 @@ server <- function(input, output, session) {
     entries_raw() %>% 
       # subtracting 4 hours gets the actual time EST...
       # then i'm taking away another 4 hours so that if i do something at 2 or 3am 
-      # (up to 4am here, using minus 4 hours), it'll count for the previous day
-      mutate(start = start - lubridate::hours(8),
-             stop = stop - lubridate::hours(8),
+      # (up to 4am here, using minus 4 hours), it'll count towards the previous day
+      mutate(start = start - lubridate::hours(11),
+             stop = stop - lubridate::hours(11),
              date = lubridate::date(start))
   })
   
