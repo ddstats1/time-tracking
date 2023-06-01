@@ -350,13 +350,6 @@ plot_overall_calendar <- function(start_date, end_date, totals_df, goals_df) {
                                         compl_goals < tot_goals ~ "0")) %>% 
     pull(did_complete_all)
   
-  if (length(unique(vec_completed)) < 3) {
-    
-    loc_to_change <- which(is.na(vec_completed), NA_character_)[1]
-    vec_completed[loc_to_change] <- "1"
-    
-  }
-  
   cal <- calendR(
     start_date = start_date,
     end_date = end_date,
