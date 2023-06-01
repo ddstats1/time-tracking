@@ -681,6 +681,7 @@ ui <- dashboardPage(
         
         fluidRow(
           box(
+            title = h5("All Projects", align = "center"),
             width = 12,
             
             dateRangeInput("overall_cal_dates", "", 
