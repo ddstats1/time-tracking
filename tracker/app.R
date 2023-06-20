@@ -22,8 +22,8 @@ library(forcats)
 # of these, e.g. daily_totals(), weekly_totals(), ...
 
 # entries_df <- read_csv(here::here("toggl-entries", "time_entries.csv")) %>%
-#   mutate(start = start - lubridate::hours(7),
-#          stop = stop - lubridate::hours(7),
+#   mutate(start = start - lubridate::hours(4),
+#          stop = stop - lubridate::hours(4),
 #          date = lubridate::date(start))
 # 
 # daily_totals_df <- entries_df %>%
@@ -255,11 +255,11 @@ plot_calendar <- function(start_date, end_date, project, totals_df, goals_df) {
            # if missing, make 0
            mins_complete = ifelse(is.na(mins_complete), 0, mins_complete),
            mins_goal = ifelse(is.na(mins_goal), 0, mins_goal),
-           did_complete = case_when(date > date(Sys.time() - hours(7)) ~ NA_character_,
+           did_complete = case_when(date > date(Sys.time() - hours(4)) ~ NA_character_,
                                     mins_goal == 0 ~ NA_character_,
                                     mins_complete >= mins_goal ~ "1",
                                     # don't want today to be red if haven't completed
-                                    date == date(Sys.time() - hours(7)) & (mins_complete < mins_goal) ~ NA_character_,
+                                    date == date(Sys.time() - hours(4)) & (mins_complete < mins_goal) ~ NA_character_,
                                     mins_complete < mins_goal ~ "0")) %>% 
     pull(did_complete)
   
@@ -294,11 +294,11 @@ plot_calendar <- function(start_date, end_date, project, totals_df, goals_df) {
   #          # if missing, make 0
   #          mins_complete = ifelse(is.na(mins_complete), 0, mins_complete),
   #          mins_goal = ifelse(is.na(mins_goal), 0, mins_goal),
-  #          did_complete = case_when(date > date(Sys.time() - hours(7)) ~ NA_character_,
+  #          did_complete = case_when(date > date(Sys.time() - hours(4)) ~ NA_character_,
   #                                   mins_goal == 0 ~ NA_character_,
   #                                   mins_complete >= mins_goal ~ "1",
   #                                   # don't want today to be red if haven't completed
-  #                                   date == date(Sys.time() - hours(7)) & (mins_complete < mins_goal) ~ NA_character_,
+  #                                   date == date(Sys.time() - hours(4)) & (mins_complete < mins_goal) ~ NA_character_,
   #                                   mins_complete < mins_goal ~ "0"))
   # 
   # days_met <- end_month_totals %>% filter(did_complete == "1") %>% nrow()
@@ -334,19 +334,19 @@ plot_overall_calendar <- function(start_date, end_date, totals_df, goals_df) {
            mins_complete = ifelse(is.na(mins_complete), 0, mins_complete),
            mins_goal = ifelse(is.na(mins_goal), 0, mins_goal),
            was_goal_set = ifelse(mins_goal == 0, 0, 1),
-           did_complete = case_when(date > date(Sys.time() - hours(7)) ~ NA,
+           did_complete = case_when(date > date(Sys.time() - hours(4)) ~ NA,
                                     mins_goal == 0 ~ NA,
                                     mins_complete >= mins_goal ~ 1,
                                     # don't want today to be red if haven't completed
-                                    date == date(Sys.time() - hours(7)) & (mins_complete < mins_goal) ~ NA,
+                                    date == date(Sys.time() - hours(4)) & (mins_complete < mins_goal) ~ NA,
                                     mins_complete < mins_goal ~ 0)) %>% 
     group_by(date) %>% 
     summarise(compl_goals = sum(did_complete, na.rm = TRUE),
               tot_goals = sum(was_goal_set, na.rm = TRUE)) %>% 
-    mutate(did_complete_all = case_when(date > date(Sys.time() - hours(7)) ~ NA_character_, # future days: white
-                                        tot_goals == 0 ~ NA_character_, # if no goal set that day: white
+    mutate(did_complete_all = case_when(date > date(Sys.time() - hours(4)) ~ NA_character_,
+                                        tot_goals == 0 ~ NA_character_,
                                         compl_goals == tot_goals ~ "1",
-                                        date == date(Sys.time() - hours(7)) & compl_goals < tot_goals ~ NA_character_,
+                                        date == date(Sys.time() - hours(4)) & compl_goals < tot_goals ~ NA_character_,
                                         compl_goals < tot_goals ~ "0")) %>% 
     pull(did_complete_all)
   
@@ -436,8 +436,8 @@ make_calendar_box <- function(project, id) {
     
     dateRangeInput(str_c(id, "_cal_dates"), "", 
                    # default range: last month and this month
-                   start = str_c(year(date(Sys.time() - hours(7))), "-", "0", month(date(Sys.time() - hours(7))) - 1, "-01"),
-                   end = lubridate::ceiling_date(date(Sys.time() - hours(7)), "month") - lubridate::days(1)),
+                   start = str_c(year(date(Sys.time() - hours(4))), "-", "0", month(date(Sys.time() - hours(4))) - 1, "-01"),
+                   end = lubridate::ceiling_date(date(Sys.time() - hours(4)), "month") - lubridate::days(1)),
     
     plotOutput(str_c(id, "_cal_plot"))
   ) 
@@ -609,9 +609,9 @@ ui <- dashboardPage(
           ),
           
           
-          # plan-out donuts
+          # Journal/Plan donuts
           fluidRow(
-            make_donuts_box(box_title = "plan-out",
+            make_donuts_box(box_title = "Journal/Plan",
                             icon = icon("notebook"),
                             box_id = "journal_donut",
                             plot_id = "journal")
@@ -651,35 +651,7 @@ ui <- dashboardPage(
                             plot_id = "proj")
           )
           
-        ),
-        
-        # FIFTH ROW
-        
-        splitLayout(
-          # 3 boxes in the first row
-          cellWidths = c("33.33%", "33.33%", "33.33%"),
-          
-          
-          # Stretch & Strength donuts
-          fluidRow(
-            make_donuts_box(box_title = "Stretch & Strength",
-                            icon = icon("dumbbell"),
-                            box_id = "ss_donut",
-                            plot_id = "ss")
-          ),
-          
-          # Exercise donuts
-          fluidRow(
-            box()
-          ),
-          
-          # Personal Project donuts
-          fluidRow(
-            box()
-          )
-          
         )
-        
         
         
       ), # end of donut page
@@ -714,10 +686,10 @@ ui <- dashboardPage(
             
             dateRangeInput("overall_cal_dates", "", 
                            # default range: last month and 4 months ago
-                           start = str_c(year(date(Sys.time() - hours(7))), "-", "0", 
-                                         month(date(Sys.time() - hours(7))) - 3, 
+                           start = str_c(year(date(Sys.time() - hours(4))), "-", "0", 
+                                         month(date(Sys.time() - hours(4))) - 3, 
                                          "-01"),
-                           end = lubridate::ceiling_date(date(Sys.time() - hours(7)), "month") - lubridate::days(1)
+                           end = lubridate::ceiling_date(date(Sys.time() - hours(4)), "month") - lubridate::days(1)
             ),
             
             plotOutput("overall_cal_plot")
@@ -754,7 +726,7 @@ ui <- dashboardPage(
           
           fluidRow(make_calendar_box(project = "articles/essays/videos/news", id = "arts")),
           fluidRow(make_calendar_box(project = "review/research", id = "research")),
-          fluidRow(make_calendar_box(project = "plan-out", id = "journal"))
+          fluidRow(make_calendar_box(project = "journal/plan", id = "journal"))
         ),
         
         
@@ -944,11 +916,11 @@ server <- function(input, output, session) {
   output$plot_bl_donut_day <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default on the server is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default on the server is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -973,7 +945,7 @@ server <- function(input, output, session) {
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
                project = "BlueLabs", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "week", 1)) 
   })
   
   output$plot_bl_donut_month <- renderPlot({
@@ -981,7 +953,7 @@ server <- function(input, output, session) {
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
                project = "BlueLabs", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1))
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "month", 1))
   })
   
   
@@ -990,11 +962,11 @@ server <- function(input, output, session) {
   output$plot_books_donut_day <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -1018,7 +990,7 @@ server <- function(input, output, session) {
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
                project = "read-books", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "week", 1)) 
   })
   
   output$plot_books_donut_month <- renderPlot({
@@ -1026,7 +998,7 @@ server <- function(input, output, session) {
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
                project = "read-books", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "month", 1)) 
   })
   
   
@@ -1035,11 +1007,11 @@ server <- function(input, output, session) {
   output$plot_organize_donut_day <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -1063,7 +1035,7 @@ server <- function(input, output, session) {
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
                project = "organize/build-skills", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "week", 1)) 
   })
   
   output$plot_organize_donut_month <- renderPlot({
@@ -1071,7 +1043,7 @@ server <- function(input, output, session) {
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
                project = "organize/build-skills", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "month", 1)) 
   })
   
   
@@ -1080,11 +1052,11 @@ server <- function(input, output, session) {
   output$plot_proj_donut_day <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -1108,7 +1080,7 @@ server <- function(input, output, session) {
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
                project = "pers-project", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "week", 1)) 
   })
   
   output$plot_proj_donut_month <- renderPlot({
@@ -1116,7 +1088,7 @@ server <- function(input, output, session) {
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
                project = "pers-project", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "month", 1)) 
   })
   
   
@@ -1125,11 +1097,11 @@ server <- function(input, output, session) {
   output$plot_skill_donut_day <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -1153,7 +1125,7 @@ server <- function(input, output, session) {
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
                project = "learn-skill", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "week", 1)) 
   })
   
   output$plot_skill_donut_month <- renderPlot({
@@ -1161,7 +1133,7 @@ server <- function(input, output, session) {
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
                project = "learn-skill", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "month", 1)) 
   })
   
   
@@ -1170,11 +1142,11 @@ server <- function(input, output, session) {
   output$plot_cooking_donut_day <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -1198,7 +1170,7 @@ server <- function(input, output, session) {
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
                project = "cooking/baking", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "week", 1)) 
   })
   
   output$plot_cooking_donut_month <- renderPlot({
@@ -1206,7 +1178,7 @@ server <- function(input, output, session) {
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
                project = "cooking/baking", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "month", 1)) 
   })
   
   
@@ -1215,11 +1187,11 @@ server <- function(input, output, session) {
   output$plot_ss_donut_day <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -1243,7 +1215,7 @@ server <- function(input, output, session) {
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
                project = "stretch & strength", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "week", 1)) 
   })
   
   output$plot_ss_donut_month <- renderPlot({
@@ -1251,7 +1223,7 @@ server <- function(input, output, session) {
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
                project = "stretch & strength", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "month", 1)) 
   })
   
   
@@ -1260,11 +1232,11 @@ server <- function(input, output, session) {
   output$plot_exercise_donut_day <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -1288,7 +1260,7 @@ server <- function(input, output, session) {
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
                project = "exercise", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "week", 1)) 
   })
   
   output$plot_exercise_donut_month <- renderPlot({
@@ -1296,7 +1268,7 @@ server <- function(input, output, session) {
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
                project = "exercise", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "month", 1)) 
   })
   
   
@@ -1305,11 +1277,11 @@ server <- function(input, output, session) {
   output$plot_rr_donut_day <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -1333,7 +1305,7 @@ server <- function(input, output, session) {
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
                project = "review/research", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "week", 1)) 
   })
   
   output$plot_rr_donut_month <- renderPlot({
@@ -1341,7 +1313,7 @@ server <- function(input, output, session) {
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
                project = "review/research", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "month", 1)) 
   })
   
   
@@ -1350,11 +1322,11 @@ server <- function(input, output, session) {
   output$plot_arts_donut_day <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -1378,7 +1350,7 @@ server <- function(input, output, session) {
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
                project = "articles/essays/videos/news", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "week", 1)) 
   })
   
   output$plot_arts_donut_month <- renderPlot({
@@ -1386,7 +1358,7 @@ server <- function(input, output, session) {
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
                project = "articles/essays/videos/news", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "month", 1)) 
   })
   
   
@@ -1395,11 +1367,11 @@ server <- function(input, output, session) {
   output$plot_resp_donut_day <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -1423,7 +1395,7 @@ server <- function(input, output, session) {
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
                project = "responsibilities/chores", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "week", 1)) 
   })
   
   output$plot_resp_donut_month <- renderPlot({
@@ -1431,20 +1403,20 @@ server <- function(input, output, session) {
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
                project = "responsibilities/chores", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1)) 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "month", 1)) 
   })
   
   
-  ## plan-out donuts
+  ## Journal/Plan donuts
   
   output$plot_journal_donut_day <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -1459,7 +1431,7 @@ server <- function(input, output, session) {
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
-               project = "plan-out", 
+               project = "journal/plan", 
                date_ = date_adj) 
   })
   
@@ -1467,16 +1439,16 @@ server <- function(input, output, session) {
     plot_donut(time_pd = "week", 
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
-               project = "plan-out", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
+               project = "journal/plan", 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "week", 1)) 
   })
   
   output$plot_journal_donut_month <- renderPlot({
     plot_donut(time_pd = "month", 
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
-               project = "plan-out", 
-               date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1)) 
+               project = "journal/plan", 
+               date_ = lubridate::floor_date(date(Sys.time() - hours(4)), "month", 1)) 
   })
   
   
@@ -1485,11 +1457,11 @@ server <- function(input, output, session) {
   output$today_bar <- renderPlot({
     
     # if current time is between 12:00:01 am and 4:00:00 am, then want to display
-    # plot from yesterday's date instead of date(Sys.time() - hours(7))
+    # plot from yesterday's date instead of date(Sys.time() - hours(4))
     
     
     # THE ACTUAL CURRENT TIME, EST
-    curr_time_est <- Sys.time() - hours(7) # adjusting b/c default on the server is UTC timezone, 4 hrs ahead
+    curr_time_est <- Sys.time() - hours(4) # adjusting b/c default on the server is UTC timezone, 4 hrs ahead
     
     # between midnight and 4am
     latenight_interval <- interval(ymd_hm(str_c(date(curr_time_est), " 00:01")), 
@@ -1584,7 +1556,7 @@ server <- function(input, output, session) {
   output$journal_cal_plot <- renderPlot({
     plot_calendar(start_date = input$journal_cal_dates[1],
                   end_date = input$journal_cal_dates[2],
-                  project = "plan-out",
+                  project = "journal/plan",
                   totals_df = daily_totals(),
                   goals_df = daily_goals())
   })
