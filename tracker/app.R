@@ -343,8 +343,8 @@ plot_overall_calendar <- function(start_date, end_date, totals_df, goals_df) {
     group_by(date) %>% 
     summarise(compl_goals = sum(did_complete, na.rm = TRUE),
               tot_goals = sum(was_goal_set, na.rm = TRUE)) %>% 
-    mutate(did_complete_all = case_when(date > date(Sys.time() - hours(7)) ~ NA_character_,
-                                        tot_goals == 0 ~ NA_character_,
+    mutate(did_complete_all = case_when(date > date(Sys.time() - hours(7)) ~ NA_character_, # future days: white
+                                        tot_goals == 0 ~ NA_character_, # if no goal set that day: white
                                         compl_goals == tot_goals ~ "1",
                                         date == date(Sys.time() - hours(7)) & compl_goals < tot_goals ~ NA_character_,
                                         compl_goals < tot_goals ~ "0")) %>% 
@@ -609,9 +609,9 @@ ui <- dashboardPage(
           ),
           
           
-          # Journal/Plan donuts
+          # plan-out donuts
           fluidRow(
-            make_donuts_box(box_title = "Journal/Plan",
+            make_donuts_box(box_title = "plan-out",
                             icon = icon("notebook"),
                             box_id = "journal_donut",
                             plot_id = "journal")
@@ -651,7 +651,35 @@ ui <- dashboardPage(
                             plot_id = "proj")
           )
           
+        ),
+        
+        # FIFTH ROW
+        
+        splitLayout(
+          # 3 boxes in the first row
+          cellWidths = c("33.33%", "33.33%", "33.33%"),
+          
+          
+          # Stretch & Strength donuts
+          fluidRow(
+            make_donuts_box(box_title = "Stretch & Strength",
+                            icon = icon("dumbbell"),
+                            box_id = "ss_donut",
+                            plot_id = "ss")
+          ),
+          
+          # Exercise donuts
+          fluidRow(
+            box()
+          ),
+          
+          # Personal Project donuts
+          fluidRow(
+            box()
+          )
+          
         )
+        
         
         
       ), # end of donut page
@@ -726,7 +754,7 @@ ui <- dashboardPage(
           
           fluidRow(make_calendar_box(project = "articles/essays/videos/news", id = "arts")),
           fluidRow(make_calendar_box(project = "review/research", id = "research")),
-          fluidRow(make_calendar_box(project = "journal/plan", id = "journal"))
+          fluidRow(make_calendar_box(project = "plan-out", id = "journal"))
         ),
         
         
@@ -1407,7 +1435,7 @@ server <- function(input, output, session) {
   })
   
   
-  ## Journal/Plan donuts
+  ## plan-out donuts
   
   output$plot_journal_donut_day <- renderPlot({
     
@@ -1431,7 +1459,7 @@ server <- function(input, output, session) {
     plot_donut(time_pd = "day", 
                totals_df = daily_totals(),
                goals_df = daily_goals(),
-               project = "journal/plan", 
+               project = "plan-out", 
                date_ = date_adj) 
   })
   
@@ -1439,7 +1467,7 @@ server <- function(input, output, session) {
     plot_donut(time_pd = "week", 
                totals_df = weekly_totals(),
                goals_df = weekly_goals(),
-               project = "journal/plan", 
+               project = "plan-out", 
                date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "week", 1)) 
   })
   
@@ -1447,7 +1475,7 @@ server <- function(input, output, session) {
     plot_donut(time_pd = "month", 
                totals_df = monthly_totals(),
                goals_df = monthly_goals(),
-               project = "journal/plan", 
+               project = "plan-out", 
                date_ = lubridate::floor_date(date(Sys.time() - hours(7)), "month", 1)) 
   })
   
@@ -1556,7 +1584,7 @@ server <- function(input, output, session) {
   output$journal_cal_plot <- renderPlot({
     plot_calendar(start_date = input$journal_cal_dates[1],
                   end_date = input$journal_cal_dates[2],
-                  project = "journal/plan",
+                  project = "plan-out",
                   totals_df = daily_totals(),
                   goals_df = daily_goals())
   })
