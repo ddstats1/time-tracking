@@ -389,7 +389,7 @@ plot_todays_goals <- function(totals_df, goals_df, date) {
               size = 5,
               nudge_y = 13.5) +
     coord_flip() +
-    scale_fill_manual(values = c("#fac23a", "green3", "grey")) +
+    scale_fill_manual(values = c("#fac23a", "grey", "green3")) +
     labs(x = "", y = "mins") + 
     theme_minimal() +
     theme(legend.position = "none",
